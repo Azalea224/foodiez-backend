@@ -1,11 +1,56 @@
 import express, { Request, Response } from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import morgan from "morgan";
+import { errorHandler, notFound } from "./middleware/errorHandler";
+
+// Import routes
+import userRoutes from "./routers/userRoutes";
+import categoryRoutes from "./routers/categoryRoutes";
+import ingredientRoutes from "./routers/ingredientRoutes";
+import recipeRoutes from "./routers/recipeRoutes";
+import recipeIngredientRoutes from "./routers/recipeIngredientRoutes";
 
 const app = express();
 const port = process.env.PORT || 3000;
+const mongoURI = process.env.MONGODB_URI || "mongodb://localhost:27017/foodiez";
 
+// Middleware
+app.use(cors());
+app.use(morgan("dev"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Connect to MongoDB
+mongoose
+  .connect(mongoURI)
+  .then(() => {
+    console.log("MongoDB connected successfully");
+  })
+  .catch((error) => {
+    console.error("MongoDB connection error:", error);
+    process.exit(1);
+  });
+
+// Routes
 app.get("/", (req: Request, res: Response) => {
-  res.send("Hello from Express with TypeScript!");
+  res.json({
+    success: true,
+    message: "Foodiez API is running!",
+  });
 });
+
+app.use("/api/users", userRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/ingredients", ingredientRoutes);
+app.use("/api/recipes", recipeRoutes);
+app.use("/api/recipe-ingredients", recipeIngredientRoutes);
+
+// 404 handler (must be before error handler)
+app.use(notFound);
+
+// Error handler (must be last)
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
