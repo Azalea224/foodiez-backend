@@ -1,0 +1,852 @@
+{
+	"info": {
+		"_postman_id": "foodiez-api-collection",
+		"name": "Foodiez API",
+		"description": "Complete API collection for Foodiez Backend - Recipe Management System",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Root",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								""
+							]
+						},
+						"description": "Check if the API is running"
+					}
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						},
+						"description": "Retrieve all users"
+					}
+				},
+				{
+					"name": "Get User by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/users/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"description": "User ID"
+								}
+							]
+						},
+						"description": "Retrieve a specific user by ID"
+					}
+				},
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"john_doe\",\n  \"email\": \"john@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						},
+						"description": "Create a new user. Requires username and email."
+					}
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"john_doe_updated\",\n  \"email\": \"john.updated@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"description": "User ID"
+								}
+							]
+						},
+						"description": "Update an existing user"
+					}
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/users/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"description": "User ID"
+								}
+							]
+						},
+						"description": "Delete a user by ID"
+					}
+				}
+			]
+		},
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "Get All Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"categories"
+							]
+						},
+						"description": "Retrieve all categories"
+					}
+				},
+				{
+					"name": "Get Category by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/categories/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"categories",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"description": "Category ID"
+								}
+							]
+						},
+						"description": "Retrieve a specific category by ID"
+					}
+				},
+				{
+					"name": "Create Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Desserts\",\n  \"description\": \"Sweet treats and desserts\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"categories"
+							]
+						},
+						"description": "Create a new category. Name is required, description is optional."
+					}
+				},
+				{
+					"name": "Update Category",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Desserts Updated\",\n  \"description\": \"Updated description for desserts\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/categories/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"categories",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"description": "Category ID"
+								}
+							]
+						},
+						"description": "Update an existing category"
+					}
+				},
+				{
+					"name": "Delete Category",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/categories/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"categories",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"description": "Category ID"
+								}
+							]
+						},
+						"description": "Delete a category by ID"
+					}
+				}
+			]
+		},
+		{
+			"name": "Ingredients",
+			"item": [
+				{
+					"name": "Get All Ingredients",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ingredients",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"ingredients"
+							]
+						},
+						"description": "Retrieve all ingredients, sorted by name"
+					}
+				},
+				{
+					"name": "Get Ingredient by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ingredients/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"ingredients",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"description": "Ingredient ID"
+								}
+							]
+						},
+						"description": "Retrieve a specific ingredient by ID"
+					}
+				},
+				{
+					"name": "Create Ingredient",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Flour\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ingredients",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"ingredients"
+							]
+						},
+						"description": "Create a new ingredient. Name is required."
+					}
+				},
+				{
+					"name": "Update Ingredient",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"All-Purpose Flour\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ingredients/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"ingredients",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"description": "Ingredient ID"
+								}
+							]
+						},
+						"description": "Update an existing ingredient"
+					}
+				},
+				{
+					"name": "Delete Ingredient",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ingredients/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"ingredients",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"description": "Ingredient ID"
+								}
+							]
+						},
+						"description": "Delete an ingredient by ID"
+					}
+				}
+			]
+		},
+		{
+			"name": "Recipes",
+			"item": [
+				{
+					"name": "Get All Recipes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/recipes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"recipes"
+							]
+						},
+						"description": "Retrieve all recipes. Optionally filter by user_id or category_id using query parameters."
+					}
+				},
+				{
+					"name": "Get All Recipes (Filter by User)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/recipes?user_id=:user_id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"recipes"
+							],
+							"query": [
+								{
+									"key": "user_id",
+									"value": ":user_id",
+									"description": "Filter recipes by user ID"
+								}
+							]
+						},
+						"description": "Get all recipes filtered by user_id"
+					}
+				},
+				{
+					"name": "Get All Recipes (Filter by Category)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/recipes?category_id=:category_id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"recipes"
+							],
+							"query": [
+								{
+									"key": "category_id",
+									"value": ":category_id",
+									"description": "Filter recipes by category ID"
+								}
+							]
+						},
+						"description": "Get all recipes filtered by category_id"
+					}
+				},
+				{
+					"name": "Get Recipe by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/recipes/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"recipes",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"description": "Recipe ID"
+								}
+							]
+						},
+						"description": "Retrieve a specific recipe by ID with populated user and category data"
+					}
+				},
+				{
+					"name": "Create Recipe",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Chocolate Chip Cookies\",\n  \"description\": \"Delicious homemade chocolate chip cookies\",\n  \"user_id\": \"\",\n  \"category_id\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/recipes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"recipes"
+							]
+						},
+						"description": "Create a new recipe. Requires title, user_id, and category_id. Description is optional."
+					}
+				},
+				{
+					"name": "Update Recipe",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Updated Recipe Title\",\n  \"description\": \"Updated description\",\n  \"user_id\": \"\",\n  \"category_id\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/recipes/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"recipes",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"description": "Recipe ID"
+								}
+							]
+						},
+						"description": "Update an existing recipe. All fields are optional."
+					}
+				},
+				{
+					"name": "Delete Recipe",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/recipes/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"recipes",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"description": "Recipe ID"
+								}
+							]
+						},
+						"description": "Delete a recipe by ID"
+					}
+				}
+			]
+		},
+		{
+			"name": "Recipe Ingredients",
+			"item": [
+				{
+					"name": "Get All Recipe Ingredients",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/recipe-ingredients",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"recipe-ingredients"
+							]
+						},
+						"description": "Retrieve all recipe ingredients. Optionally filter by recipe_id or ingredient_id using query parameters."
+					}
+				},
+				{
+					"name": "Get Recipe Ingredients (Filter by Recipe)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/recipe-ingredients?recipe_id=:recipe_id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"recipe-ingredients"
+							],
+							"query": [
+								{
+									"key": "recipe_id",
+									"value": ":recipe_id",
+									"description": "Filter by recipe ID"
+								}
+							]
+						},
+						"description": "Get all recipe ingredients filtered by recipe_id"
+					}
+				},
+				{
+					"name": "Get Recipe Ingredients (Filter by Ingredient)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/recipe-ingredients?ingredient_id=:ingredient_id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"recipe-ingredients"
+							],
+							"query": [
+								{
+									"key": "ingredient_id",
+									"value": ":ingredient_id",
+									"description": "Filter by ingredient ID"
+								}
+							]
+						},
+						"description": "Get all recipe ingredients filtered by ingredient_id"
+					}
+				},
+				{
+					"name": "Get Ingredients by Recipe ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/recipe-ingredients/recipe/:recipe_id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"recipe-ingredients",
+								"recipe",
+								":recipe_id"
+							],
+							"variable": [
+								{
+									"key": "recipe_id",
+									"value": "",
+									"description": "Recipe ID"
+								}
+							]
+						},
+						"description": "Get all ingredients for a specific recipe"
+					}
+				},
+				{
+					"name": "Get Recipe Ingredient by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/recipe-ingredients/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"recipe-ingredients",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"description": "Recipe Ingredient ID"
+								}
+							]
+						},
+						"description": "Retrieve a specific recipe ingredient by ID"
+					}
+				},
+				{
+					"name": "Create Recipe Ingredient",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"recipe_id\": \"\",\n  \"ingredient_id\": \"\",\n  \"quantity\": 2,\n  \"unit\": \"cups\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/recipe-ingredients",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"recipe-ingredients"
+							]
+						},
+						"description": "Create a new recipe ingredient. Requires recipe_id, ingredient_id, quantity, and unit."
+					}
+				},
+				{
+					"name": "Update Recipe Ingredient",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"recipe_id\": \"\",\n  \"ingredient_id\": \"\",\n  \"quantity\": 3,\n  \"unit\": \"tablespoons\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/recipe-ingredients/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"recipe-ingredients",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"description": "Recipe Ingredient ID"
+								}
+							]
+						},
+						"description": "Update an existing recipe ingredient. All fields are optional."
+					}
+				},
+				{
+					"name": "Delete Recipe Ingredient",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/recipe-ingredients/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"recipe-ingredients",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "",
+									"description": "Recipe Ingredient ID"
+								}
+							]
+						},
+						"description": "Delete a recipe ingredient by ID"
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		}
+	]
+}
+
