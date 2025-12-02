@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express, { Request, Response } from "express";
 import mongoose from "mongoose";
 import cors from "cors";
@@ -15,6 +18,11 @@ import recipeIngredientRoutes from "./routers/recipeIngredientRoutes";
 const app = express();
 const port = process.env.PORT || 3000;
 const mongoURI = process.env.MONGODB_URI || "mongodb://localhost:27017/foodiez";
+
+// Debug: Log MongoDB URI (without password for security)
+if (process.env.NODE_ENV !== 'production') {
+  console.log("MongoDB URI:", mongoURI.replace(/\/\/[^:]+:[^@]+@/, '//***:***@'));
+}
 
 // Middleware
 app.use(cors());

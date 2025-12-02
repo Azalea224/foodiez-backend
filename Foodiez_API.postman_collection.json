@@ -844,7 +844,7 @@
 	"variable": [
 		{
 			"key": "base_url",
-			"value": "http://localhost:3000",
+			"value": "http://134.122.96.197:3000",
 			"type": "string"
 		}
 	]
