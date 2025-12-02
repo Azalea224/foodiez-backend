@@ -1,109 +1,201 @@
 # Foodiez API
 
-A RESTful API for managing recipes, ingredients, categories, and users. Built with Express.js, TypeScript, and MongoDB.
+A comprehensive RESTful API backend for a recipe management application. This API provides authentication, user management, recipe creation, ingredient tracking, and image upload capabilities. Built with modern technologies for scalability and maintainability.
 
-## Features
+## 📋 Table of Contents
 
-- 🔐 **Authentication** - User registration, login, and JWT-based authentication
-- 🍳 **Recipe Management** - Create, read, update, and delete recipes
-- 👥 **User Management** - Manage users who create recipes with profile images
-- 📁 **Category Management** - Organize recipes by categories
-- 🥘 **Ingredient Management** - Manage ingredients used in recipes
-- 🔗 **Recipe Ingredients** - Link ingredients to recipes with quantities and units
-- 🔍 **Filtering & Querying** - Filter recipes by user or category
-- 🖼️ **Profile Images** - Upload and manage user profile images stored in MongoDB
-- 🔒 **Protected Routes** - JWT token-based route protection
-- ✅ **Error Handling** - Comprehensive error handling middleware
-- 📝 **Request Logging** - HTTP request logging with Morgan
+- [Project Description](#project-description)
+- [Tech Stack](#tech-stack)
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [Frontend Developer Guide](#frontend-developer-guide)
+- [API Documentation](#api-documentation)
+- [Authentication](#authentication)
+- [Data Models](#data-models)
+- [Error Handling](#error-handling)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
 
-## Tech Stack
+## 📖 Project Description
 
+Foodiez API is a backend service designed to power recipe management applications. It enables users to:
+
+- **Create and manage accounts** with secure authentication
+- **Upload profile and recipe images** stored directly in MongoDB
+- **Create, organize, and share recipes** with detailed information
+- **Manage ingredients** and link them to recipes with quantities
+- **Categorize recipes** for better organization
+- **Filter and search** recipes by user, category, or ingredients
+
+The API follows RESTful principles and uses JWT-based authentication for secure access to protected resources.
+
+## 🛠 Tech Stack
+
+### Core Technologies
 - **Runtime**: Node.js
 - **Framework**: Express.js 5.x
-- **Language**: TypeScript
-- **Database**: MongoDB with Mongoose
-- **Authentication**: JWT (JSON Web Tokens) with bcrypt password hashing
-- **Middleware**: CORS, Morgan (logging)
+- **Language**: TypeScript 5.9
+- **Database**: MongoDB with Mongoose ODM
 
-## Prerequisites
+### Key Libraries
+- **Authentication**: JWT (jsonwebtoken) with bcrypt password hashing
+- **File Upload**: Multer for handling multipart/form-data
+- **Middleware**: 
+  - CORS for cross-origin requests
+  - Morgan for HTTP request logging
+  - dotenv for environment configuration
+
+### Development Tools
+- TypeScript for type safety
+- ts-node-dev for hot-reload development
+- Postman collection for API testing
+
+## ✨ Features
+
+- 🔐 **JWT Authentication** - Secure user registration, login, and token-based access
+- 👥 **User Management** - Complete CRUD operations with profile image support
+- 🍳 **Recipe Management** - Create, update, delete recipes with images
+- 📁 **Category System** - Organize recipes into categories
+- 🥘 **Ingredient Tracking** - Manage ingredients and link them to recipes
+- 🔗 **Recipe Ingredients** - Associate ingredients with quantities and units
+- 🖼️ **Image Storage** - Profile and recipe images stored as base64 in MongoDB
+- 🔍 **Advanced Filtering** - Filter recipes by user, category, or ingredients
+- 🔒 **Protected Routes** - JWT middleware for route protection
+- ✅ **Error Handling** - Centralized error handling with meaningful messages
+- 📝 **Request Logging** - HTTP request logging for debugging
+
+## 🚀 Quick Start
+
+### Prerequisites
 
 - Node.js (v14 or higher)
-- MongoDB (local or remote instance)
+- MongoDB (local instance or MongoDB Atlas)
 - npm or yarn
 
-## Installation
+### Installation
 
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd foodiez-backend
-```
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd foodiez-backend
+   ```
 
-2. Install dependencies:
-```bash
-npm install
-```
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-3. Set up environment variables:
-Create a `.env` file in the root directory:
-```env
-PORT=3000
-MONGODB_URI=mongodb://localhost:27017/foodiez
-JWT_SECRET=your-secret-key-change-in-production
-JWT_EXPIRE=7d
-```
+3. **Configure environment variables**
+   
+   Copy `.env.example.txt` to `.env`:
+   ```bash
+   cp .env.example.txt .env
+   ```
+   
+   Update `.env` with your configuration:
+   ```env
+   PORT=3000
+   MONGODB_URI=mongodb://localhost:27017/foodiez
+   # Or MongoDB Atlas:
+   # MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/foodiez?retryWrites=true&w=majority
+   JWT_SECRET=your-secret-key-change-in-production
+   JWT_EXPIRE=7d
+   NODE_ENV=development
+   ```
 
-**Important:** Change `JWT_SECRET` to a strong, random string in production!
+4. **Start MongoDB** (if using local instance)
+   ```bash
+   # Linux/Mac
+   sudo systemctl start mongod
+   
+   # Or using Docker
+   docker run -d -p 27017:27017 mongo
+   ```
 
-4. Make sure MongoDB is running:
-- Local MongoDB: Ensure MongoDB service is running on your machine
-- Remote MongoDB: Update `MONGODB_URI` in your `.env` file or `src/index.ts`
+5. **Run the application**
+   ```bash
+   # Development mode (with hot-reload)
+   npm run dev
+   
+   # Production mode
+   npm run build
+   npm start
+   ```
 
-## Running the Project
+The API will be available at `http://localhost:3000`
 
-### Development Mode
-```bash
-npm run dev
-```
-This will start the server with hot-reload using `ts-node-dev`.
+## 👨‍💻 Frontend Developer Guide
 
-### Production Mode
-```bash
-# Build TypeScript
-npm run build
-
-# Start the server
-npm start
-```
-
-The API will be available at `http://localhost:3000` (or the port specified in your environment variables).
-
-## Frontend Integration
-
-### Environment Variables
-
-Create a `.env` file in your frontend project or configure your environment:
-
-```env
-VITE_API_URL=http://localhost:3000
-# or
-REACT_APP_API_URL=http://localhost:3000
-# or
-NEXT_PUBLIC_API_URL=http://localhost:3000
-```
+This section provides everything frontend developers need to integrate with the Foodiez API.
 
 ### Base URL Configuration
 
-**JavaScript/TypeScript:**
-```javascript
-// config.js or constants.js
-export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-// or for React
-export const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+**For Development:**
+```
+http://localhost:3000
 ```
 
-**Using Axios:**
+**For Production:**
+```
+http://134.122.96.197:3000
+# Or your production domain
+```
+
+### Environment Setup
+
+Create a `.env` file in your frontend project:
+
+**Vite:**
+```env
+VITE_API_URL=http://localhost:3000
+```
+
+**React (Create React App):**
+```env
+REACT_APP_API_URL=http://localhost:3000
+```
+
+**Next.js:**
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000
+```
+
+### API Client Setup
+
+#### Using Fetch API
+
 ```javascript
+// config.js
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
+// api.js
+export const apiRequest = async (endpoint, options = {}) => {
+  const token = localStorage.getItem('token');
+  
+  const config = {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` }),
+      ...options.headers,
+    },
+  };
+  
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Something went wrong');
+  }
+  
+  return response.json();
+};
+```
+
+#### Using Axios (Recommended)
+
+```javascript
+// api.js
 import axios from 'axios';
 
 const api = axios.create({
@@ -112,1125 +204,362 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
-```
 
-### CORS Configuration
-
-The API has CORS enabled by default. Make sure your frontend origin is allowed. The API accepts requests from any origin in development mode.
-
-## API Endpoints
-
-### Base URL
-```
-http://localhost:3000
-```
-
-### Health Check
-- **GET** `/` - Check if the API is running
-
-### Authentication
-- **POST** `/api/auth/register` - Register a new user
-- **POST** `/api/auth/login` - Login user and get JWT token
-- **POST** `/api/auth/logout` - Logout user (client-side token removal)
-- **GET** `/api/auth/me` - Get current authenticated user (protected)
-
-### Users
-- **GET** `/api/users` - Get all users
-- **GET** `/api/users/:id` - Get user by ID
-- **POST** `/api/users` - Create a new user
-- **PUT** `/api/users/:id` - Update a user
-- **DELETE** `/api/users/:id` - Delete a user
-- **POST** `/api/users/:id/profile-image` - Upload profile image
-- **DELETE** `/api/users/:id/profile-image` - Delete profile image
-
-### Categories
-- **GET** `/api/categories` - Get all categories
-- **GET** `/api/categories/:id` - Get category by ID
-- **POST** `/api/categories` - Create a new category
-- **PUT** `/api/categories/:id` - Update a category
-- **DELETE** `/api/categories/:id` - Delete a category
-
-### Ingredients
-- **GET** `/api/ingredients` - Get all ingredients (sorted by name)
-- **GET** `/api/ingredients/:id` - Get ingredient by ID
-- **POST** `/api/ingredients` - Create a new ingredient
-- **PUT** `/api/ingredients/:id` - Update an ingredient
-- **DELETE** `/api/ingredients/:id` - Delete an ingredient
-
-### Recipes
-- **GET** `/api/recipes` - Get all recipes
-  - Query params: `?user_id=<id>`, `?category_id=<id>`
-- **GET** `/api/recipes/:id` - Get recipe by ID
-- **POST** `/api/recipes` - Create a new recipe
-- **PUT** `/api/recipes/:id` - Update a recipe
-- **DELETE** `/api/recipes/:id` - Delete a recipe
-
-### Recipe Ingredients
-- **GET** `/api/recipe-ingredients` - Get all recipe ingredients
-  - Query params: `?recipe_id=<id>`, `?ingredient_id=<id>`
-- **GET** `/api/recipe-ingredients/:id` - Get recipe ingredient by ID
-- **GET** `/api/recipe-ingredients/recipe/:recipe_id` - Get all ingredients for a specific recipe
-- **POST** `/api/recipe-ingredients` - Create a new recipe ingredient
-- **PUT** `/api/recipe-ingredients/:id` - Update a recipe ingredient
-- **DELETE** `/api/recipe-ingredients/:id` - Delete a recipe ingredient
-
-## API Endpoint Details with Frontend Examples
-
-### Health Check
-
-**GET** `/`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL (e.g., `http://localhost:3000`)
-
-**Fetch Example:**
-```javascript
-const response = await fetch(`${API_BASE_URL}/`);
-const data = await response.json();
-console.log(data); // { success: true, message: "Foodiez API is running!" }
-```
-
-**Axios Example:**
-```javascript
-const response = await api.get('/');
-console.log(response.data);
-```
-
----
-
-### Users
-
-#### Get All Users
-
-**GET** `/api/users`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-
-**Fetch Example:**
-```javascript
-const response = await fetch(`${API_BASE_URL}/api/users`);
-const data = await response.json();
-// data: { success: true, count: 10, data: [...] }
-```
-
-**Axios Example:**
-```javascript
-const { data } = await api.get('/api/users');
-// data: { success: true, count: 10, data: [...] }
-```
-
-#### Get User by ID
-
-**GET** `/api/users/:id`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-- `userId` - User ID (MongoDB ObjectId)
-
-**Fetch Example:**
-```javascript
-const userId = '60d5ec49f1b2c72b8c8e4f1a';
-const response = await fetch(`${API_BASE_URL}/api/users/${userId}`);
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-const userId = '60d5ec49f1b2c72b8c8e4f1a';
-const { data } = await api.get(`/api/users/${userId}`);
-```
-
-#### Create User
-
-**POST** `/api/users`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-- `username` - Username (string, required, unique)
-- `email` - Email address (string, required, unique)
-
-**Fetch Example:**
-```javascript
-const userData = {
-  username: 'john_doe',
-  email: 'john@example.com'
-};
-
-const response = await fetch(`${API_BASE_URL}/api/users`, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify(userData),
-});
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-const userData = {
-  username: 'john_doe',
-  email: 'john@example.com'
-};
-
-const { data } = await api.post('/api/users', userData);
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "_id": "60d5ec49f1b2c72b8c8e4f1a",
-    "username": "john_doe",
-    "email": "john@example.com",
-    "profileImage": null,
-    "profileImageContentType": null,
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "updatedAt": "2024-01-01T00:00:00.000Z"
+// Add token to requests
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
-}
-```
-
-#### Update User
-
-**PUT** `/api/users/:id`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-- `userId` - User ID (MongoDB ObjectId)
-- `username` - New username (string, optional)
-- `email` - New email (string, optional)
-
-**Fetch Example:**
-```javascript
-const userId = '60d5ec49f1b2c72b8c8e4f1a';
-const updateData = {
-  username: 'john_doe_updated',
-  email: 'john.updated@example.com'
-};
-
-const response = await fetch(`${API_BASE_URL}/api/users/${userId}`, {
-  method: 'PUT',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify(updateData),
-});
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-const userId = '60d5ec49f1b2c72b8c8e4f1a';
-const updateData = {
-  username: 'john_doe_updated',
-  email: 'john.updated@example.com'
-};
-
-const { data } = await api.put(`/api/users/${userId}`, updateData);
-```
-
-#### Delete User
-
-**DELETE** `/api/users/:id`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-- `userId` - User ID (MongoDB ObjectId)
-
-**Fetch Example:**
-```javascript
-const userId = '60d5ec49f1b2c72b8c8e4f1a';
-const response = await fetch(`${API_BASE_URL}/api/users/${userId}`, {
-  method: 'DELETE',
-});
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-const userId = '60d5ec49f1b2c72b8c8e4f1a';
-const { data } = await api.delete(`/api/users/${userId}`);
-```
-
-#### Upload Profile Image
-
-**POST** `/api/users/:id/profile-image`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-- `userId` - User ID (MongoDB ObjectId)
-- `profileImage` - Image file (File object, max 5MB, image types only)
-
-**Fetch Example:**
-```javascript
-const userId = '60d5ec49f1b2c72b8c8e4f1a';
-const fileInput = document.querySelector('input[type="file"]');
-const formData = new FormData();
-formData.append('profileImage', fileInput.files[0]);
-
-const response = await fetch(`${API_BASE_URL}/api/users/${userId}/profile-image`, {
-  method: 'POST',
-  body: formData, // Don't set Content-Type header, browser will set it with boundary
-});
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-const userId = '60d5ec49f1b2c72b8c8e4f1a';
-const fileInput = document.querySelector('input[type="file"]');
-const formData = new FormData();
-formData.append('profileImage', fileInput.files[0]);
-
-const { data } = await api.post(
-  `/api/users/${userId}/profile-image`,
-  formData,
-  {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  }
-);
-```
-
-**React Example:**
-```jsx
-const uploadProfileImage = async (userId, file) => {
-  const formData = new FormData();
-  formData.append('profileImage', file);
-  
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/users/${userId}/profile-image`, {
-      method: 'POST',
-      body: formData,
-    });
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error uploading image:', error);
-  }
-};
-
-// Usage in component
-<input 
-  type="file" 
-  accept="image/*" 
-  onChange={(e) => {
-    if (e.target.files && e.target.files[0]) {
-      uploadProfileImage(userId, e.target.files[0]);
-    }
-  }}
-/>
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Profile image uploaded successfully",
-  "data": {
-    "_id": "60d5ec49f1b2c72b8c8e4f1a",
-    "username": "john_doe",
-    "email": "john@example.com",
-    "profileImage": "data:image/jpeg;base64,/9j/4AAQSkZJRg...",
-    "profileImageContentType": "image/jpeg",
-    "updatedAt": "2024-01-01T00:00:00.000Z"
-  }
-}
-```
-
-**Display Profile Image:**
-```jsx
-// React example
-<img 
-  src={user.profileImage || '/default-avatar.png'} 
-  alt="Profile" 
-/>
-```
-
-#### Delete Profile Image
-
-**DELETE** `/api/users/:id/profile-image`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-- `userId` - User ID (MongoDB ObjectId)
-
-**Fetch Example:**
-```javascript
-const userId = '60d5ec49f1b2c72b8c8e4f1a';
-const response = await fetch(`${API_BASE_URL}/api/users/${userId}/profile-image`, {
-  method: 'DELETE',
-});
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-const userId = '60d5ec49f1b2c72b8c8e4f1a';
-const { data } = await api.delete(`/api/users/${userId}/profile-image`);
-```
-
----
-
-### Categories
-
-#### Get All Categories
-
-**GET** `/api/categories`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-
-**Fetch Example:**
-```javascript
-const response = await fetch(`${API_BASE_URL}/api/categories`);
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-const { data } = await api.get('/api/categories');
-```
-
-#### Get Category by ID
-
-**GET** `/api/categories/:id`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-- `categoryId` - Category ID (MongoDB ObjectId)
-
-**Fetch Example:**
-```javascript
-const categoryId = '60d5ec49f1b2c72b8c8e4f1b';
-const response = await fetch(`${API_BASE_URL}/api/categories/${categoryId}`);
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-const categoryId = '60d5ec49f1b2c72b8c8e4f1b';
-const { data } = await api.get(`/api/categories/${categoryId}`);
-```
-
-#### Create Category
-
-**POST** `/api/categories`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-- `name` - Category name (string, required, unique)
-- `description` - Category description (string, optional)
-
-**Fetch Example:**
-```javascript
-const categoryData = {
-  name: 'Desserts',
-  description: 'Sweet treats and desserts'
-};
-
-const response = await fetch(`${API_BASE_URL}/api/categories`, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify(categoryData),
-});
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-const categoryData = {
-  name: 'Desserts',
-  description: 'Sweet treats and desserts'
-};
-
-const { data } = await api.post('/api/categories', categoryData);
-```
-
-#### Update Category
-
-**PUT** `/api/categories/:id`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-- `categoryId` - Category ID (MongoDB ObjectId)
-- `name` - New category name (string, optional)
-- `description` - New description (string, optional)
-
-**Fetch Example:**
-```javascript
-const categoryId = '60d5ec49f1b2c72b8c8e4f1b';
-const updateData = {
-  name: 'Desserts Updated',
-  description: 'Updated description'
-};
-
-const response = await fetch(`${API_BASE_URL}/api/categories/${categoryId}`, {
-  method: 'PUT',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify(updateData),
-});
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-const categoryId = '60d5ec49f1b2c72b8c8e4f1b';
-const updateData = {
-  name: 'Desserts Updated',
-  description: 'Updated description'
-};
-
-const { data } = await api.put(`/api/categories/${categoryId}`, updateData);
-```
-
-#### Delete Category
-
-**DELETE** `/api/categories/:id`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-- `categoryId` - Category ID (MongoDB ObjectId)
-
-**Fetch Example:**
-```javascript
-const categoryId = '60d5ec49f1b2c72b8c8e4f1b';
-const response = await fetch(`${API_BASE_URL}/api/categories/${categoryId}`, {
-  method: 'DELETE',
-});
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-const categoryId = '60d5ec49f1b2c72b8c8e4f1b';
-const { data } = await api.delete(`/api/categories/${categoryId}`);
-```
-
----
-
-### Ingredients
-
-#### Get All Ingredients
-
-**GET** `/api/ingredients`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-
-**Fetch Example:**
-```javascript
-const response = await fetch(`${API_BASE_URL}/api/ingredients`);
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-const { data } = await api.get('/api/ingredients');
-```
-
-#### Get Ingredient by ID
-
-**GET** `/api/ingredients/:id`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-- `ingredientId` - Ingredient ID (MongoDB ObjectId)
-
-**Fetch Example:**
-```javascript
-const ingredientId = '60d5ec49f1b2c72b8c8e4f1d';
-const response = await fetch(`${API_BASE_URL}/api/ingredients/${ingredientId}`);
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-const ingredientId = '60d5ec49f1b2c72b8c8e4f1d';
-const { data } = await api.get(`/api/ingredients/${ingredientId}`);
-```
-
-#### Create Ingredient
-
-**POST** `/api/ingredients`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-- `name` - Ingredient name (string, required, unique)
-
-**Fetch Example:**
-```javascript
-const ingredientData = {
-  name: 'Flour'
-};
-
-const response = await fetch(`${API_BASE_URL}/api/ingredients`, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify(ingredientData),
-});
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-const ingredientData = {
-  name: 'Flour'
-};
-
-const { data } = await api.post('/api/ingredients', ingredientData);
-```
-
-#### Update Ingredient
-
-**PUT** `/api/ingredients/:id`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-- `ingredientId` - Ingredient ID (MongoDB ObjectId)
-- `name` - New ingredient name (string, optional)
-
-**Fetch Example:**
-```javascript
-const ingredientId = '60d5ec49f1b2c72b8c8e4f1d';
-const updateData = {
-  name: 'All-Purpose Flour'
-};
-
-const response = await fetch(`${API_BASE_URL}/api/ingredients/${ingredientId}`, {
-  method: 'PUT',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify(updateData),
-});
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-const ingredientId = '60d5ec49f1b2c72b8c8e4f1d';
-const updateData = {
-  name: 'All-Purpose Flour'
-};
-
-const { data } = await api.put(`/api/ingredients/${ingredientId}`, updateData);
-```
-
-#### Delete Ingredient
-
-**DELETE** `/api/ingredients/:id`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-- `ingredientId` - Ingredient ID (MongoDB ObjectId)
-
-**Fetch Example:**
-```javascript
-const ingredientId = '60d5ec49f1b2c72b8c8e4f1d';
-const response = await fetch(`${API_BASE_URL}/api/ingredients/${ingredientId}`, {
-  method: 'DELETE',
-});
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-const ingredientId = '60d5ec49f1b2c72b8c8e4f1d';
-const { data } = await api.delete(`/api/ingredients/${ingredientId}`);
-```
-
----
-
-### Recipes
-
-#### Get All Recipes
-
-**GET** `/api/recipes`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-- `user_id` - (optional) Filter by user ID (query parameter)
-- `category_id` - (optional) Filter by category ID (query parameter)
-
-**Fetch Example:**
-```javascript
-// Get all recipes
-const response = await fetch(`${API_BASE_URL}/api/recipes`);
-const data = await response.json();
-
-// Get recipes by user
-const userId = '60d5ec49f1b2c72b8c8e4f1a';
-const response = await fetch(`${API_BASE_URL}/api/recipes?user_id=${userId}`);
-const data = await response.json();
-
-// Get recipes by category
-const categoryId = '60d5ec49f1b2c72b8c8e4f1b';
-const response = await fetch(`${API_BASE_URL}/api/recipes?category_id=${categoryId}`);
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-// Get all recipes
-const { data } = await api.get('/api/recipes');
-
-// Get recipes by user
-const userId = '60d5ec49f1b2c72b8c8e4f1a';
-const { data } = await api.get('/api/recipes', {
-  params: { user_id: userId }
+  return config;
 });
 
-// Get recipes by category
-const categoryId = '60d5ec49f1b2c72b8c8e4f1b';
-const { data } = await api.get('/api/recipes', {
-  params: { category_id: categoryId }
-});
-```
-
-#### Get Recipe by ID
-
-**GET** `/api/recipes/:id`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-- `recipeId` - Recipe ID (MongoDB ObjectId)
-
-**Fetch Example:**
-```javascript
-const recipeId = '60d5ec49f1b2c72b8c8e4f1c';
-const response = await fetch(`${API_BASE_URL}/api/recipes/${recipeId}`);
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-const recipeId = '60d5ec49f1b2c72b8c8e4f1c';
-const { data } = await api.get(`/api/recipes/${recipeId}`);
-```
-
-#### Create Recipe
-
-**POST** `/api/recipes`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-- `title` - Recipe title (string, required)
-- `description` - Recipe description (string, optional)
-- `user_id` - User ID (MongoDB ObjectId, required)
-- `category_id` - Category ID (MongoDB ObjectId, required)
-
-**Fetch Example:**
-```javascript
-const recipeData = {
-  title: 'Chocolate Chip Cookies',
-  description: 'Delicious homemade chocolate chip cookies',
-  user_id: '60d5ec49f1b2c72b8c8e4f1a',
-  category_id: '60d5ec49f1b2c72b8c8e4f1b'
-};
-
-const response = await fetch(`${API_BASE_URL}/api/recipes`, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify(recipeData),
-});
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-const recipeData = {
-  title: 'Chocolate Chip Cookies',
-  description: 'Delicious homemade chocolate chip cookies',
-  user_id: '60d5ec49f1b2c72b8c8e4f1a',
-  category_id: '60d5ec49f1b2c72b8c8e4f1b'
-};
-
-const { data } = await api.post('/api/recipes', recipeData);
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "_id": "60d5ec49f1b2c72b8c8e4f1c",
-    "title": "Chocolate Chip Cookies",
-    "description": "Delicious homemade chocolate chip cookies",
-    "user_id": {
-      "_id": "60d5ec49f1b2c72b8c8e4f1a",
-      "username": "john_doe",
-      "email": "john@example.com"
-    },
-    "category_id": {
-      "_id": "60d5ec49f1b2c72b8c8e4f1b",
-      "name": "Desserts",
-      "description": "Sweet treats and desserts"
-    },
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "updatedAt": "2024-01-01T00:00:00.000Z"
-  }
-}
-```
-
-#### Update Recipe
-
-**PUT** `/api/recipes/:id`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-- `recipeId` - Recipe ID (MongoDB ObjectId)
-- `title` - New recipe title (string, optional)
-- `description` - New description (string, optional)
-- `user_id` - New user ID (MongoDB ObjectId, optional)
-- `category_id` - New category ID (MongoDB ObjectId, optional)
-
-**Fetch Example:**
-```javascript
-const recipeId = '60d5ec49f1b2c72b8c8e4f1c';
-const updateData = {
-  title: 'Updated Recipe Title',
-  description: 'Updated description'
-};
-
-const response = await fetch(`${API_BASE_URL}/api/recipes/${recipeId}`, {
-  method: 'PUT',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify(updateData),
-});
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-const recipeId = '60d5ec49f1b2c72b8c8e4f1c';
-const updateData = {
-  title: 'Updated Recipe Title',
-  description: 'Updated description'
-};
-
-const { data } = await api.put(`/api/recipes/${recipeId}`, updateData);
-```
-
-#### Delete Recipe
-
-**DELETE** `/api/recipes/:id`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-- `recipeId` - Recipe ID (MongoDB ObjectId)
-
-**Fetch Example:**
-```javascript
-const recipeId = '60d5ec49f1b2c72b8c8e4f1c';
-const response = await fetch(`${API_BASE_URL}/api/recipes/${recipeId}`, {
-  method: 'DELETE',
-});
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-const recipeId = '60d5ec49f1b2c72b8c8e4f1c';
-const { data } = await api.delete(`/api/recipes/${recipeId}`);
-```
-
----
-
-### Recipe Ingredients
-
-#### Get All Recipe Ingredients
-
-**GET** `/api/recipe-ingredients`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-- `recipe_id` - (optional) Filter by recipe ID (query parameter)
-- `ingredient_id` - (optional) Filter by ingredient ID (query parameter)
-
-**Fetch Example:**
-```javascript
-// Get all recipe ingredients
-const response = await fetch(`${API_BASE_URL}/api/recipe-ingredients`);
-const data = await response.json();
-
-// Get recipe ingredients by recipe
-const recipeId = '60d5ec49f1b2c72b8c8e4f1c';
-const response = await fetch(`${API_BASE_URL}/api/recipe-ingredients?recipe_id=${recipeId}`);
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-// Get all recipe ingredients
-const { data } = await api.get('/api/recipe-ingredients');
-
-// Get recipe ingredients by recipe
-const recipeId = '60d5ec49f1b2c72b8c8e4f1c';
-const { data } = await api.get('/api/recipe-ingredients', {
-  params: { recipe_id: recipeId }
-});
-```
-
-#### Get Ingredients by Recipe ID
-
-**GET** `/api/recipe-ingredients/recipe/:recipe_id`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-- `recipeId` - Recipe ID (MongoDB ObjectId)
-
-**Fetch Example:**
-```javascript
-const recipeId = '60d5ec49f1b2c72b8c8e4f1c';
-const response = await fetch(`${API_BASE_URL}/api/recipe-ingredients/recipe/${recipeId}`);
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-const recipeId = '60d5ec49f1b2c72b8c8e4f1c';
-const { data } = await api.get(`/api/recipe-ingredients/recipe/${recipeId}`);
-```
-
-#### Get Recipe Ingredient by ID
-
-**GET** `/api/recipe-ingredients/:id`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-- `recipeIngredientId` - Recipe Ingredient ID (MongoDB ObjectId)
-
-**Fetch Example:**
-```javascript
-const recipeIngredientId = '60d5ec49f1b2c72b8c8e4f1e';
-const response = await fetch(`${API_BASE_URL}/api/recipe-ingredients/${recipeIngredientId}`);
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-const recipeIngredientId = '60d5ec49f1b2c72b8c8e4f1e';
-const { data } = await api.get(`/api/recipe-ingredients/${recipeIngredientId}`);
-```
-
-#### Create Recipe Ingredient
-
-**POST** `/api/recipe-ingredients`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-- `recipe_id` - Recipe ID (MongoDB ObjectId, required)
-- `ingredient_id` - Ingredient ID (MongoDB ObjectId, required)
-- `quantity` - Quantity (string, required)
-- `unit` - Unit of measurement (string, required)
-
-**Fetch Example:**
-```javascript
-const recipeIngredientData = {
-  recipe_id: '60d5ec49f1b2c72b8c8e4f1c',
-  ingredient_id: '60d5ec49f1b2c72b8c8e4f1d',
-  quantity: '2',
-  unit: 'cups'
-};
-
-const response = await fetch(`${API_BASE_URL}/api/recipe-ingredients`, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify(recipeIngredientData),
-});
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-const recipeIngredientData = {
-  recipe_id: '60d5ec49f1b2c72b8c8e4f1c',
-  ingredient_id: '60d5ec49f1b2c72b8c8e4f1d',
-  quantity: '2',
-  unit: 'cups'
-};
-
-const { data } = await api.post('/api/recipe-ingredients', recipeIngredientData);
-```
-
-#### Update Recipe Ingredient
-
-**PUT** `/api/recipe-ingredients/:id`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-- `recipeIngredientId` - Recipe Ingredient ID (MongoDB ObjectId)
-- `recipe_id` - New recipe ID (MongoDB ObjectId, optional)
-- `ingredient_id` - New ingredient ID (MongoDB ObjectId, optional)
-- `quantity` - New quantity (string, optional)
-- `unit` - New unit (string, optional)
-
-**Fetch Example:**
-```javascript
-const recipeIngredientId = '60d5ec49f1b2c72b8c8e4f1e';
-const updateData = {
-  quantity: '3',
-  unit: 'tablespoons'
-};
-
-const response = await fetch(`${API_BASE_URL}/api/recipe-ingredients/${recipeIngredientId}`, {
-  method: 'PUT',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify(updateData),
-});
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-const recipeIngredientId = '60d5ec49f1b2c72b8c8e4f1e';
-const updateData = {
-  quantity: '3',
-  unit: 'tablespoons'
-};
-
-const { data } = await api.put(`/api/recipe-ingredients/${recipeIngredientId}`, updateData);
-```
-
-#### Delete Recipe Ingredient
-
-**DELETE** `/api/recipe-ingredients/:id`
-
-**Variables:**
-- `API_BASE_URL` - Your API base URL
-- `recipeIngredientId` - Recipe Ingredient ID (MongoDB ObjectId)
-
-**Fetch Example:**
-```javascript
-const recipeIngredientId = '60d5ec49f1b2c72b8c8e4f1e';
-const response = await fetch(`${API_BASE_URL}/api/recipe-ingredients/${recipeIngredientId}`, {
-  method: 'DELETE',
-});
-const data = await response.json();
-```
-
-**Axios Example:**
-```javascript
-const recipeIngredientId = '60d5ec49f1b2c72b8c8e4f1e';
-const { data } = await api.delete(`/api/recipe-ingredients/${recipeIngredientId}`);
-```
-
----
-
-## Error Handling Examples
-
-### Frontend Error Handling
-
-**Fetch with Error Handling:**
-```javascript
-const fetchUser = async (userId) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/users/${userId}`);
-    
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Something went wrong');
-    }
-    
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error fetching user:', error);
-    // Handle error in UI
-    return null;
-  }
-};
-```
-
-**Axios with Error Handling:**
-```javascript
-import axios from 'axios';
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Add response interceptor for error handling
+// Handle errors
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response) {
-      // Server responded with error
-      const errorMessage = error.response.data.error || 'Something went wrong';
-      console.error('API Error:', errorMessage);
-      // Handle error in UI
-    } else if (error.request) {
-      // Request made but no response
-      console.error('Network Error:', error.request);
-    } else {
-      // Something else happened
-      console.error('Error:', error.message);
+    if (error.response?.status === 401) {
+      // Handle unauthorized - redirect to login
+      localStorage.removeItem('token');
+      window.location.href = '/login';
     }
     return Promise.reject(error);
   }
 );
+
+export default api;
 ```
 
-**Error Response Format:**
-```json
-{
-  "success": false,
-  "error": "User not found"
+### Authentication Flow
+
+#### 1. Register a New User
+
+```javascript
+const register = async (username, email, password) => {
+  const response = await api.post('/api/auth/register', {
+    username,
+    email,
+    password,
+  });
+  
+  // Store token
+  localStorage.setItem('token', response.data.data.token);
+  return response.data;
+};
+```
+
+#### 2. Login
+
+```javascript
+const login = async (email, password) => {
+  const response = await api.post('/api/auth/login', {
+    email,
+    password,
+  });
+  
+  // Store token
+  localStorage.setItem('token', response.data.data.token);
+  return response.data;
+};
+```
+
+#### 3. Get Current User
+
+```javascript
+const getCurrentUser = async () => {
+  const response = await api.get('/api/auth/me');
+  return response.data.data;
+};
+```
+
+#### 4. Logout
+
+```javascript
+const logout = async () => {
+  localStorage.removeItem('token');
+  // Optionally call logout endpoint
+  await api.post('/api/auth/logout');
+};
+```
+
+### React Authentication Hook Example
+
+```jsx
+// useAuth.js
+import { useState, useEffect } from 'react';
+import api from './api';
+
+export const useAuth = () => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      api.get('/api/auth/me')
+        .then((res) => {
+          setUser(res.data.data);
+          setLoading(false);
+        })
+        .catch(() => {
+          localStorage.removeItem('token');
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
+    }
+  }, []);
+
+  const login = async (email, password) => {
+    const res = await api.post('/api/auth/login', { email, password });
+    localStorage.setItem('token', res.data.data.token);
+    setUser(res.data.data.user);
+    return res.data;
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    setUser(null);
+  };
+
+  return { user, loading, login, logout };
+};
+```
+
+### Image Upload Examples
+
+#### Upload Profile Image
+
+```javascript
+const uploadProfileImage = async (userId, file) => {
+  const formData = new FormData();
+  formData.append('profileImage', file);
+  
+  const response = await api.post(
+    `/api/users/${userId}/profile-image`,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
+  
+  return response.data;
+};
+```
+
+#### Upload Recipe Image
+
+```javascript
+const uploadRecipeImage = async (recipeId, file) => {
+  const formData = new FormData();
+  formData.append('image', file);
+  
+  const response = await api.post(
+    `/api/recipes/${recipeId}/image`,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
+  
+  return response.data;
+};
+```
+
+#### Display Images
+
+```jsx
+// React component
+<img 
+  src={user.profileImage || '/default-avatar.png'} 
+  alt="Profile" 
+/>
+
+<img 
+  src={recipe.image || '/default-recipe.png'} 
+  alt={recipe.title} 
+/>
+```
+
+### Common API Patterns
+
+#### Creating a Recipe
+
+```javascript
+const createRecipe = async (recipeData) => {
+  const response = await api.post('/api/recipes', {
+    title: recipeData.title,
+    description: recipeData.description,
+    user_id: recipeData.userId,
+    category_id: recipeData.categoryId,
+  });
+  return response.data;
+};
+```
+
+#### Filtering Recipes
+
+```javascript
+// Get recipes by user
+const getUserRecipes = async (userId) => {
+  const response = await api.get(`/api/recipes?user_id=${userId}`);
+  return response.data;
+};
+
+// Get recipes by category
+const getCategoryRecipes = async (categoryId) => {
+  const response = await api.get(`/api/recipes?category_id=${categoryId}`);
+  return response.data;
+};
+```
+
+#### Error Handling
+
+```javascript
+try {
+  const response = await api.get('/api/recipes');
+  // Handle success
+} catch (error) {
+  if (error.response) {
+    // Server responded with error
+    console.error('API Error:', error.response.data.error);
+  } else if (error.request) {
+    // Request made but no response
+    console.error('Network Error:', error.message);
+  } else {
+    // Something else happened
+    console.error('Error:', error.message);
+  }
 }
 ```
 
-## Data Models
+### CORS Configuration
+
+The API has CORS enabled. For production, ensure your frontend domain is whitelisted. Contact the backend team to add your domain to the allowed origins.
+
+## 📚 API Documentation
+
+### Base URL
+```
+Development: http://localhost:3000
+Production: http://134.122.96.197:3000
+```
+
+### Authentication Endpoints
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| POST | `/api/auth/register` | Register new user | No |
+| POST | `/api/auth/login` | Login user | No |
+| POST | `/api/auth/logout` | Logout user | No |
+| GET | `/api/auth/me` | Get current user | Yes |
+
+### User Endpoints
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/api/users` | Get all users | No |
+| GET | `/api/users/:id` | Get user by ID | No |
+| POST | `/api/users` | Create user | No |
+| PUT | `/api/users/:id` | Update user | No |
+| DELETE | `/api/users/:id` | Delete user | No |
+| POST | `/api/users/:id/profile-image` | Upload profile image | No |
+| DELETE | `/api/users/:id/profile-image` | Delete profile image | No |
+
+### Recipe Endpoints
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/api/recipes` | Get all recipes (supports `?user_id=` and `?category_id=` query params) | No |
+| GET | `/api/recipes/:id` | Get recipe by ID | No |
+| POST | `/api/recipes` | Create recipe | No |
+| PUT | `/api/recipes/:id` | Update recipe | No |
+| DELETE | `/api/recipes/:id` | Delete recipe | No |
+| POST | `/api/recipes/:id/image` | Upload recipe image | No |
+| DELETE | `/api/recipes/:id/image` | Delete recipe image | No |
+
+### Category Endpoints
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/api/categories` | Get all categories | No |
+| GET | `/api/categories/:id` | Get category by ID | No |
+| POST | `/api/categories` | Create category | No |
+| PUT | `/api/categories/:id` | Update category | No |
+| DELETE | `/api/categories/:id` | Delete category | No |
+
+### Ingredient Endpoints
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/api/ingredients` | Get all ingredients | No |
+| GET | `/api/ingredients/:id` | Get ingredient by ID | No |
+| POST | `/api/ingredients` | Create ingredient | No |
+| PUT | `/api/ingredients/:id` | Update ingredient | No |
+| DELETE | `/api/ingredients/:id` | Delete ingredient | No |
+
+### Recipe Ingredient Endpoints
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/api/recipe-ingredients` | Get all recipe ingredients (supports `?recipe_id=` and `?ingredient_id=` query params) | No |
+| GET | `/api/recipe-ingredients/:id` | Get recipe ingredient by ID | No |
+| GET | `/api/recipe-ingredients/recipe/:recipe_id` | Get all ingredients for a recipe | No |
+| POST | `/api/recipe-ingredients` | Create recipe ingredient | No |
+| PUT | `/api/recipe-ingredients/:id` | Update recipe ingredient | No |
+| DELETE | `/api/recipe-ingredients/:id` | Delete recipe ingredient | No |
+
+## 🔐 Authentication
+
+### How It Works
+
+1. **Register/Login**: User provides credentials and receives a JWT token
+2. **Token Storage**: Store token in `localStorage` or secure storage
+3. **Authenticated Requests**: Include token in `Authorization` header
+4. **Token Expiration**: Tokens expire after 7 days (configurable)
+
+### Request Format
+
+```javascript
+// Include token in Authorization header
+headers: {
+  'Authorization': 'Bearer <your-jwt-token>'
+}
+```
+
+### Response Format
+
+**Success:**
+```json
+{
+  "success": true,
+  "data": { ... }
+}
+```
+
+**Error:**
+```json
+{
+  "success": false,
+  "error": "Error message"
+}
+```
+
+## 📊 Data Models
 
 ### User
 ```typescript
 {
+  _id: string;
   username: string;              // Required, unique
-  email: string;                 // Required, unique, lowercase
-  password: string;              // Required, hashed with bcrypt, min 6 characters
-  profileImage?: string;         // Base64 encoded image data URI (optional)
-  profileImageContentType?: string; // MIME type (optional)
-  createdAt: Date;
-  updatedAt: Date;
-}
-```
-```
-
-### Category
-```typescript
-{
-  name: string;         // Required, unique
-  description: string;  // Optional
-  createdAt: Date;
-  updatedAt: Date;
-}
-```
-
-### Ingredient
-```typescript
-{
-  name: string;         // Required, unique
+  email: string;                 // Required, unique
+  password: string;              // Hashed, not returned in responses
+  profileImage?: string;         // Base64 data URI
+  profileImageContentType?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -1239,10 +568,34 @@ api.interceptors.response.use(
 ### Recipe
 ```typescript
 {
-  title: string;        // Required
-  description: string;  // Optional
-  user_id: ObjectId;    // Required, references User
-  category_id: ObjectId; // Required, references Category
+  _id: string;
+  title: string;                // Required
+  description?: string;
+  user_id: ObjectId;            // Required, references User
+  category_id: ObjectId;         // Required, references Category
+  image?: string;                // Base64 data URI
+  imageContentType?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+### Category
+```typescript
+{
+  _id: string;
+  name: string;                 // Required, unique
+  description?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+### Ingredient
+```typescript
+{
+  _id: string;
+  name: string;                 // Required, unique
   createdAt: Date;
   updatedAt: Date;
 }
@@ -1251,10 +604,11 @@ api.interceptors.response.use(
 ### RecipeIngredient
 ```typescript
 {
-  recipe_id: ObjectId;     // Required, references Recipe
-  ingredient_id: ObjectId; // Required, references Ingredient
-  quantity: string;        // Required
-  unit: string;            // Required
+  _id: string;
+  recipe_id: ObjectId;          // Required, references Recipe
+  ingredient_id: ObjectId;      // Required, references Ingredient
+  quantity: string;             // Required (e.g., "2", "1.5")
+  unit: string;                 // Required (e.g., "cups", "tablespoons")
   createdAt: Date;
   updatedAt: Date;
 }
@@ -1262,27 +616,30 @@ api.interceptors.response.use(
 
 **Note:** The combination of `recipe_id` and `ingredient_id` must be unique.
 
-## Error Handling
+## ⚠️ Error Handling
 
-The API uses a centralized error handling middleware. All errors follow this format:
+### HTTP Status Codes
+
+- `200` - Success
+- `201` - Created
+- `400` - Bad Request (validation errors)
+- `401` - Unauthorized (invalid/missing token)
+- `403` - Forbidden (insufficient permissions)
+- `404` - Not Found
+- `500` - Internal Server Error
+
+### Error Response Format
 
 ```json
 {
   "success": false,
-  "error": "Error message here"
+  "error": "Descriptive error message"
 }
 ```
 
-Common HTTP status codes:
-- `200` - Success
-- `201` - Created
-- `400` - Bad Request (validation errors, missing required fields)
-- `401` - Unauthorized (invalid or missing token, invalid credentials)
-- `403` - Forbidden (insufficient permissions)
-- `404` - Not Found (resource doesn't exist)
-- `500` - Internal Server Error
+### Common Errors
 
-**Error Response Examples:**
+**Validation Error:**
 ```json
 {
   "success": false,
@@ -1290,6 +647,7 @@ Common HTTP status codes:
 }
 ```
 
+**Authentication Error:**
 ```json
 {
   "success": false,
@@ -1297,6 +655,7 @@ Common HTTP status codes:
 }
 ```
 
+**Authorization Error:**
 ```json
 {
   "success": false,
@@ -1304,75 +663,134 @@ Common HTTP status codes:
 }
 ```
 
-## Project Structure
+**Not Found Error:**
+```json
+{
+  "success": false,
+  "error": "Recipe not found"
+}
+```
+
+## 🚢 Deployment
+
+### Environment Variables
+
+Required environment variables for production:
+
+```env
+PORT=3000
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/foodiez
+JWT_SECRET=your-strong-secret-key-minimum-32-characters
+JWT_EXPIRE=7d
+NODE_ENV=production
+```
+
+### Build for Production
+
+```bash
+npm run build
+npm start
+```
+
+### Using PM2 (Process Manager)
+
+```bash
+npm install -g pm2
+pm2 start dist/index.js --name foodiez-api
+pm2 save
+pm2 startup
+```
+
+See `DEPLOYMENT.md` for detailed deployment instructions.
+
+## 📦 Project Structure
 
 ```
 foodiez-backend/
 ├── src/
-│   ├── controllers/      # Request handlers
+│   ├── controllers/          # Request handlers
 │   │   ├── authController.ts
+│   │   ├── userController.ts
+│   │   ├── recipeController.ts
 │   │   ├── categoryController.ts
 │   │   ├── ingredientController.ts
-│   │   ├── recipeController.ts
-│   │   ├── recipeIngredientController.ts
-│   │   └── userController.ts
-│   ├── middleware/        # Custom middleware
-│   │   ├── authorize.ts
-│   │   ├── errorHandler.ts
-│   │   └── ...
-│   ├── models/           # Mongoose models
+│   │   └── recipeIngredientController.ts
+│   ├── middleware/           # Custom middleware
+│   │   ├── authorize.ts      # JWT authentication
+│   │   ├── errorHandler.ts   # Error handling
+│   │   └── upload.ts         # File upload handling
+│   ├── models/              # Mongoose models
+│   │   ├── User.ts
+│   │   ├── Recipe.ts
 │   │   ├── Category.ts
 │   │   ├── Ingredient.ts
-│   │   ├── Recipe.ts
 │   │   ├── RecipeIngredient.ts
-│   │   ├── User.ts
 │   │   └── index.ts
-│   ├── routers/          # Route definitions
+│   ├── routers/             # Route definitions
 │   │   ├── authRoutes.ts
+│   │   ├── userRoutes.ts
+│   │   ├── recipeRoutes.ts
 │   │   ├── categoryRoutes.ts
 │   │   ├── ingredientRoutes.ts
-│   │   ├── recipeRoutes.ts
-│   │   ├── recipeIngredientRoutes.ts
-│   │   └── userRoutes.ts
-│   ├── type/             # TypeScript type definitions
-│   └── index.ts          # Application entry point
-├── dist/                 # Compiled JavaScript (generated)
-├── node_modules/         # Dependencies
+│   │   └── recipeIngredientRoutes.ts
+│   ├── type/                # TypeScript types
+│   │   └── http.ts
+│   └── index.ts             # Application entry point
+├── dist/                    # Compiled JavaScript (generated)
+├── .env.example.txt         # Environment variables template
+├── Foodiez_API.postman_collection.json  # Postman collection
 ├── package.json
 ├── tsconfig.json
-├── Foodiez_API.postman_collection.json
 └── README.md
 ```
 
-## Postman Collection
+## 🧪 Testing
 
-A complete Postman collection is included in the repository (`Foodiez_API.postman_collection.json`). 
+### Postman Collection
 
-To use it:
+A complete Postman collection is included (`Foodiez_API.postman_collection.json`). 
+
+**To use:**
 1. Import the collection into Postman
-2. Update the `base_url` variable to match your server URL (default: `http://localhost:3000`)
-3. Start testing the API endpoints
+2. Update the `base_url` variable to match your server URL
+3. Start testing endpoints
 
-## Environment Variables
+### Manual Testing
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `PORT` | Server port | `3000` |
-| `MONGODB_URI` | MongoDB connection string | `mongodb://localhost:27017/foodiez` |
-| `JWT_SECRET` | Secret key for JWT token signing | `your-secret-key-change-in-production` |
-| `JWT_EXPIRE` | JWT token expiration time | `7d` |
+```bash
+# Health check
+curl http://localhost:3000/
 
-## Scripts
+# Register user
+curl -X POST http://localhost:3000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"username":"testuser","email":"test@example.com","password":"password123"}'
+```
+
+## 📝 Scripts
 
 - `npm run dev` - Start development server with hot-reload
 - `npm run build` - Compile TypeScript to JavaScript
 - `npm start` - Start production server (requires build first)
 
-## License
-
-ISC
-
-## Contributing
+## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+ISC
+
+## 📞 Support
+
+For issues, questions, or contributions, please open an issue on the repository.
+
+---
+
+**Happy Coding! 🚀**
