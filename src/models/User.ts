@@ -3,6 +3,8 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface IUser extends Document {
   username: string;
   email: string;
+  profileImage?: string; // Base64 encoded image data
+  profileImageContentType?: string; // MIME type (e.g., 'image/jpeg', 'image/png')
 }
 
 const UserSchema: Schema = new Schema(
@@ -19,6 +21,14 @@ const UserSchema: Schema = new Schema(
       unique: true,
       lowercase: true,
       trim: true,
+    },
+    profileImage: {
+      type: String,
+      default: null,
+    },
+    profileImageContentType: {
+      type: String,
+      default: null,
     },
   },
   {

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { User } from "../models";
 import { AppError } from "../middleware/errorHandler";
+import { RequestWithFile } from "../type/http";
 
 export const getAllUsers = async (
   req: Request,
@@ -85,5 +86,71 @@ export const deleteUser = async (
   res.status(200).json({
     success: true,
     message: "User deleted successfully",
+  });
+};
+
+export const uploadProfileImage = async (
+  req: RequestWithFile,
+  res: Response
+): Promise<void> => {
+  const { id } = req.params;
+
+  if (!req.file) {
+    throw new AppError("No image file provided", 400);
+  }
+
+  // Check if file is an image
+  if (!req.file.mimetype.startsWith("image/")) {
+    throw new AppError("File must be an image", 400);
+  }
+
+  // Convert buffer to base64
+  const base64Image = req.file.buffer.toString("base64");
+  const imageDataUri = `data:${req.file.mimetype};base64,${base64Image}`;
+
+  // Update user with profile image
+  const user = await User.findByIdAndUpdate(
+    id,
+    {
+      profileImage: imageDataUri,
+      profileImageContentType: req.file.mimetype,
+    },
+    { new: true, runValidators: true }
+  ).select("-__v");
+
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Profile image uploaded successfully",
+    data: user,
+  });
+};
+
+export const deleteProfileImage = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { id } = req.params;
+
+  const user = await User.findByIdAndUpdate(
+    id,
+    {
+      profileImage: null,
+      profileImageContentType: null,
+    },
+    { new: true, runValidators: true }
+  ).select("-__v");
+
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Profile image deleted successfully",
+    data: user,
   });
 };

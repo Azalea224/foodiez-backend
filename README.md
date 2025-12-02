@@ -5,11 +5,12 @@ A RESTful API for managing recipes, ingredients, categories, and users. Built wi
 ## Features
 
 - 🍳 **Recipe Management** - Create, read, update, and delete recipes
-- 👥 **User Management** - Manage users who create recipes
+- 👥 **User Management** - Manage users who create recipes with profile images
 - 📁 **Category Management** - Organize recipes by categories
 - 🥘 **Ingredient Management** - Manage ingredients used in recipes
 - 🔗 **Recipe Ingredients** - Link ingredients to recipes with quantities and units
 - 🔍 **Filtering & Querying** - Filter recipes by user or category
+- 🖼️ **Profile Images** - Upload and manage user profile images stored in MongoDB
 - ✅ **Error Handling** - Comprehensive error handling middleware
 - 📝 **Request Logging** - HTTP request logging with Morgan
 
@@ -70,6 +71,46 @@ npm start
 
 The API will be available at `http://localhost:3000` (or the port specified in your environment variables).
 
+## Frontend Integration
+
+### Environment Variables
+
+Create a `.env` file in your frontend project or configure your environment:
+
+```env
+VITE_API_URL=http://localhost:3000
+# or
+REACT_APP_API_URL=http://localhost:3000
+# or
+NEXT_PUBLIC_API_URL=http://localhost:3000
+```
+
+### Base URL Configuration
+
+**JavaScript/TypeScript:**
+```javascript
+// config.js or constants.js
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+// or for React
+export const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+```
+
+**Using Axios:**
+```javascript
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+```
+
+### CORS Configuration
+
+The API has CORS enabled by default. Make sure your frontend origin is allowed. The API accepts requests from any origin in development mode.
+
 ## API Endpoints
 
 ### Base URL
@@ -86,6 +127,8 @@ http://localhost:3000
 - **POST** `/api/users` - Create a new user
 - **PUT** `/api/users/:id` - Update a user
 - **DELETE** `/api/users/:id` - Delete a user
+- **POST** `/api/users/:id/profile-image` - Upload profile image
+- **DELETE** `/api/users/:id/profile-image` - Delete profile image
 
 ### Categories
 - **GET** `/api/categories` - Get all categories
@@ -118,15 +161,107 @@ http://localhost:3000
 - **PUT** `/api/recipe-ingredients/:id` - Update a recipe ingredient
 - **DELETE** `/api/recipe-ingredients/:id` - Delete a recipe ingredient
 
-## Request/Response Examples
+## API Endpoint Details with Frontend Examples
 
-### Create a User
+### Health Check
+
+**GET** `/`
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL (e.g., `http://localhost:3000`)
+
+**Fetch Example:**
+```javascript
+const response = await fetch(`${API_BASE_URL}/`);
+const data = await response.json();
+console.log(data); // { success: true, message: "Foodiez API is running!" }
+```
+
+**Axios Example:**
+```javascript
+const response = await api.get('/');
+console.log(response.data);
+```
+
+---
+
+### Users
+
+#### Get All Users
+
+**GET** `/api/users`
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+
+**Fetch Example:**
+```javascript
+const response = await fetch(`${API_BASE_URL}/api/users`);
+const data = await response.json();
+// data: { success: true, count: 10, data: [...] }
+```
+
+**Axios Example:**
+```javascript
+const { data } = await api.get('/api/users');
+// data: { success: true, count: 10, data: [...] }
+```
+
+#### Get User by ID
+
+**GET** `/api/users/:id`
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+- `userId` - User ID (MongoDB ObjectId)
+
+**Fetch Example:**
+```javascript
+const userId = '60d5ec49f1b2c72b8c8e4f1a';
+const response = await fetch(`${API_BASE_URL}/api/users/${userId}`);
+const data = await response.json();
+```
+
+**Axios Example:**
+```javascript
+const userId = '60d5ec49f1b2c72b8c8e4f1a';
+const { data } = await api.get(`/api/users/${userId}`);
+```
+
+#### Create User
+
 **POST** `/api/users`
-```json
-{
-  "username": "john_doe",
-  "email": "john@example.com"
-}
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+- `username` - Username (string, required, unique)
+- `email` - Email address (string, required, unique)
+
+**Fetch Example:**
+```javascript
+const userData = {
+  username: 'john_doe',
+  email: 'john@example.com'
+};
+
+const response = await fetch(`${API_BASE_URL}/api/users`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(userData),
+});
+const data = await response.json();
+```
+
+**Axios Example:**
+```javascript
+const userData = {
+  username: 'john_doe',
+  email: 'john@example.com'
+};
+
+const { data } = await api.post('/api/users', userData);
 ```
 
 **Response:**
@@ -137,38 +272,580 @@ http://localhost:3000
     "_id": "60d5ec49f1b2c72b8c8e4f1a",
     "username": "john_doe",
     "email": "john@example.com",
+    "profileImage": null,
+    "profileImageContentType": null,
     "createdAt": "2024-01-01T00:00:00.000Z",
     "updatedAt": "2024-01-01T00:00:00.000Z"
   }
 }
 ```
 
-### Create a Category
+#### Update User
+
+**PUT** `/api/users/:id`
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+- `userId` - User ID (MongoDB ObjectId)
+- `username` - New username (string, optional)
+- `email` - New email (string, optional)
+
+**Fetch Example:**
+```javascript
+const userId = '60d5ec49f1b2c72b8c8e4f1a';
+const updateData = {
+  username: 'john_doe_updated',
+  email: 'john.updated@example.com'
+};
+
+const response = await fetch(`${API_BASE_URL}/api/users/${userId}`, {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(updateData),
+});
+const data = await response.json();
+```
+
+**Axios Example:**
+```javascript
+const userId = '60d5ec49f1b2c72b8c8e4f1a';
+const updateData = {
+  username: 'john_doe_updated',
+  email: 'john.updated@example.com'
+};
+
+const { data } = await api.put(`/api/users/${userId}`, updateData);
+```
+
+#### Delete User
+
+**DELETE** `/api/users/:id`
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+- `userId` - User ID (MongoDB ObjectId)
+
+**Fetch Example:**
+```javascript
+const userId = '60d5ec49f1b2c72b8c8e4f1a';
+const response = await fetch(`${API_BASE_URL}/api/users/${userId}`, {
+  method: 'DELETE',
+});
+const data = await response.json();
+```
+
+**Axios Example:**
+```javascript
+const userId = '60d5ec49f1b2c72b8c8e4f1a';
+const { data } = await api.delete(`/api/users/${userId}`);
+```
+
+#### Upload Profile Image
+
+**POST** `/api/users/:id/profile-image`
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+- `userId` - User ID (MongoDB ObjectId)
+- `profileImage` - Image file (File object, max 5MB, image types only)
+
+**Fetch Example:**
+```javascript
+const userId = '60d5ec49f1b2c72b8c8e4f1a';
+const fileInput = document.querySelector('input[type="file"]');
+const formData = new FormData();
+formData.append('profileImage', fileInput.files[0]);
+
+const response = await fetch(`${API_BASE_URL}/api/users/${userId}/profile-image`, {
+  method: 'POST',
+  body: formData, // Don't set Content-Type header, browser will set it with boundary
+});
+const data = await response.json();
+```
+
+**Axios Example:**
+```javascript
+const userId = '60d5ec49f1b2c72b8c8e4f1a';
+const fileInput = document.querySelector('input[type="file"]');
+const formData = new FormData();
+formData.append('profileImage', fileInput.files[0]);
+
+const { data } = await api.post(
+  `/api/users/${userId}/profile-image`,
+  formData,
+  {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  }
+);
+```
+
+**React Example:**
+```jsx
+const uploadProfileImage = async (userId, file) => {
+  const formData = new FormData();
+  formData.append('profileImage', file);
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/users/${userId}/profile-image`, {
+      method: 'POST',
+      body: formData,
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error uploading image:', error);
+  }
+};
+
+// Usage in component
+<input 
+  type="file" 
+  accept="image/*" 
+  onChange={(e) => {
+    if (e.target.files && e.target.files[0]) {
+      uploadProfileImage(userId, e.target.files[0]);
+    }
+  }}
+/>
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Profile image uploaded successfully",
+  "data": {
+    "_id": "60d5ec49f1b2c72b8c8e4f1a",
+    "username": "john_doe",
+    "email": "john@example.com",
+    "profileImage": "data:image/jpeg;base64,/9j/4AAQSkZJRg...",
+    "profileImageContentType": "image/jpeg",
+    "updatedAt": "2024-01-01T00:00:00.000Z"
+  }
+}
+```
+
+**Display Profile Image:**
+```jsx
+// React example
+<img 
+  src={user.profileImage || '/default-avatar.png'} 
+  alt="Profile" 
+/>
+```
+
+#### Delete Profile Image
+
+**DELETE** `/api/users/:id/profile-image`
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+- `userId` - User ID (MongoDB ObjectId)
+
+**Fetch Example:**
+```javascript
+const userId = '60d5ec49f1b2c72b8c8e4f1a';
+const response = await fetch(`${API_BASE_URL}/api/users/${userId}/profile-image`, {
+  method: 'DELETE',
+});
+const data = await response.json();
+```
+
+**Axios Example:**
+```javascript
+const userId = '60d5ec49f1b2c72b8c8e4f1a';
+const { data } = await api.delete(`/api/users/${userId}/profile-image`);
+```
+
+---
+
+### Categories
+
+#### Get All Categories
+
+**GET** `/api/categories`
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+
+**Fetch Example:**
+```javascript
+const response = await fetch(`${API_BASE_URL}/api/categories`);
+const data = await response.json();
+```
+
+**Axios Example:**
+```javascript
+const { data } = await api.get('/api/categories');
+```
+
+#### Get Category by ID
+
+**GET** `/api/categories/:id`
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+- `categoryId` - Category ID (MongoDB ObjectId)
+
+**Fetch Example:**
+```javascript
+const categoryId = '60d5ec49f1b2c72b8c8e4f1b';
+const response = await fetch(`${API_BASE_URL}/api/categories/${categoryId}`);
+const data = await response.json();
+```
+
+**Axios Example:**
+```javascript
+const categoryId = '60d5ec49f1b2c72b8c8e4f1b';
+const { data } = await api.get(`/api/categories/${categoryId}`);
+```
+
+#### Create Category
+
 **POST** `/api/categories`
-```json
-{
-  "name": "Desserts",
-  "description": "Sweet treats and desserts"
-}
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+- `name` - Category name (string, required, unique)
+- `description` - Category description (string, optional)
+
+**Fetch Example:**
+```javascript
+const categoryData = {
+  name: 'Desserts',
+  description: 'Sweet treats and desserts'
+};
+
+const response = await fetch(`${API_BASE_URL}/api/categories`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(categoryData),
+});
+const data = await response.json();
 ```
 
-### Create an Ingredient
+**Axios Example:**
+```javascript
+const categoryData = {
+  name: 'Desserts',
+  description: 'Sweet treats and desserts'
+};
+
+const { data } = await api.post('/api/categories', categoryData);
+```
+
+#### Update Category
+
+**PUT** `/api/categories/:id`
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+- `categoryId` - Category ID (MongoDB ObjectId)
+- `name` - New category name (string, optional)
+- `description` - New description (string, optional)
+
+**Fetch Example:**
+```javascript
+const categoryId = '60d5ec49f1b2c72b8c8e4f1b';
+const updateData = {
+  name: 'Desserts Updated',
+  description: 'Updated description'
+};
+
+const response = await fetch(`${API_BASE_URL}/api/categories/${categoryId}`, {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(updateData),
+});
+const data = await response.json();
+```
+
+**Axios Example:**
+```javascript
+const categoryId = '60d5ec49f1b2c72b8c8e4f1b';
+const updateData = {
+  name: 'Desserts Updated',
+  description: 'Updated description'
+};
+
+const { data } = await api.put(`/api/categories/${categoryId}`, updateData);
+```
+
+#### Delete Category
+
+**DELETE** `/api/categories/:id`
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+- `categoryId` - Category ID (MongoDB ObjectId)
+
+**Fetch Example:**
+```javascript
+const categoryId = '60d5ec49f1b2c72b8c8e4f1b';
+const response = await fetch(`${API_BASE_URL}/api/categories/${categoryId}`, {
+  method: 'DELETE',
+});
+const data = await response.json();
+```
+
+**Axios Example:**
+```javascript
+const categoryId = '60d5ec49f1b2c72b8c8e4f1b';
+const { data } = await api.delete(`/api/categories/${categoryId}`);
+```
+
+---
+
+### Ingredients
+
+#### Get All Ingredients
+
+**GET** `/api/ingredients`
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+
+**Fetch Example:**
+```javascript
+const response = await fetch(`${API_BASE_URL}/api/ingredients`);
+const data = await response.json();
+```
+
+**Axios Example:**
+```javascript
+const { data } = await api.get('/api/ingredients');
+```
+
+#### Get Ingredient by ID
+
+**GET** `/api/ingredients/:id`
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+- `ingredientId` - Ingredient ID (MongoDB ObjectId)
+
+**Fetch Example:**
+```javascript
+const ingredientId = '60d5ec49f1b2c72b8c8e4f1d';
+const response = await fetch(`${API_BASE_URL}/api/ingredients/${ingredientId}`);
+const data = await response.json();
+```
+
+**Axios Example:**
+```javascript
+const ingredientId = '60d5ec49f1b2c72b8c8e4f1d';
+const { data } = await api.get(`/api/ingredients/${ingredientId}`);
+```
+
+#### Create Ingredient
+
 **POST** `/api/ingredients`
-```json
-{
-  "name": "Flour"
-}
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+- `name` - Ingredient name (string, required, unique)
+
+**Fetch Example:**
+```javascript
+const ingredientData = {
+  name: 'Flour'
+};
+
+const response = await fetch(`${API_BASE_URL}/api/ingredients`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(ingredientData),
+});
+const data = await response.json();
 ```
 
-### Create a Recipe
+**Axios Example:**
+```javascript
+const ingredientData = {
+  name: 'Flour'
+};
+
+const { data } = await api.post('/api/ingredients', ingredientData);
+```
+
+#### Update Ingredient
+
+**PUT** `/api/ingredients/:id`
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+- `ingredientId` - Ingredient ID (MongoDB ObjectId)
+- `name` - New ingredient name (string, optional)
+
+**Fetch Example:**
+```javascript
+const ingredientId = '60d5ec49f1b2c72b8c8e4f1d';
+const updateData = {
+  name: 'All-Purpose Flour'
+};
+
+const response = await fetch(`${API_BASE_URL}/api/ingredients/${ingredientId}`, {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(updateData),
+});
+const data = await response.json();
+```
+
+**Axios Example:**
+```javascript
+const ingredientId = '60d5ec49f1b2c72b8c8e4f1d';
+const updateData = {
+  name: 'All-Purpose Flour'
+};
+
+const { data } = await api.put(`/api/ingredients/${ingredientId}`, updateData);
+```
+
+#### Delete Ingredient
+
+**DELETE** `/api/ingredients/:id`
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+- `ingredientId` - Ingredient ID (MongoDB ObjectId)
+
+**Fetch Example:**
+```javascript
+const ingredientId = '60d5ec49f1b2c72b8c8e4f1d';
+const response = await fetch(`${API_BASE_URL}/api/ingredients/${ingredientId}`, {
+  method: 'DELETE',
+});
+const data = await response.json();
+```
+
+**Axios Example:**
+```javascript
+const ingredientId = '60d5ec49f1b2c72b8c8e4f1d';
+const { data } = await api.delete(`/api/ingredients/${ingredientId}`);
+```
+
+---
+
+### Recipes
+
+#### Get All Recipes
+
+**GET** `/api/recipes`
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+- `user_id` - (optional) Filter by user ID (query parameter)
+- `category_id` - (optional) Filter by category ID (query parameter)
+
+**Fetch Example:**
+```javascript
+// Get all recipes
+const response = await fetch(`${API_BASE_URL}/api/recipes`);
+const data = await response.json();
+
+// Get recipes by user
+const userId = '60d5ec49f1b2c72b8c8e4f1a';
+const response = await fetch(`${API_BASE_URL}/api/recipes?user_id=${userId}`);
+const data = await response.json();
+
+// Get recipes by category
+const categoryId = '60d5ec49f1b2c72b8c8e4f1b';
+const response = await fetch(`${API_BASE_URL}/api/recipes?category_id=${categoryId}`);
+const data = await response.json();
+```
+
+**Axios Example:**
+```javascript
+// Get all recipes
+const { data } = await api.get('/api/recipes');
+
+// Get recipes by user
+const userId = '60d5ec49f1b2c72b8c8e4f1a';
+const { data } = await api.get('/api/recipes', {
+  params: { user_id: userId }
+});
+
+// Get recipes by category
+const categoryId = '60d5ec49f1b2c72b8c8e4f1b';
+const { data } = await api.get('/api/recipes', {
+  params: { category_id: categoryId }
+});
+```
+
+#### Get Recipe by ID
+
+**GET** `/api/recipes/:id`
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+- `recipeId` - Recipe ID (MongoDB ObjectId)
+
+**Fetch Example:**
+```javascript
+const recipeId = '60d5ec49f1b2c72b8c8e4f1c';
+const response = await fetch(`${API_BASE_URL}/api/recipes/${recipeId}`);
+const data = await response.json();
+```
+
+**Axios Example:**
+```javascript
+const recipeId = '60d5ec49f1b2c72b8c8e4f1c';
+const { data } = await api.get(`/api/recipes/${recipeId}`);
+```
+
+#### Create Recipe
+
 **POST** `/api/recipes`
-```json
-{
-  "title": "Chocolate Chip Cookies",
-  "description": "Delicious homemade chocolate chip cookies",
-  "user_id": "60d5ec49f1b2c72b8c8e4f1a",
-  "category_id": "60d5ec49f1b2c72b8c8e4f1b"
-}
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+- `title` - Recipe title (string, required)
+- `description` - Recipe description (string, optional)
+- `user_id` - User ID (MongoDB ObjectId, required)
+- `category_id` - Category ID (MongoDB ObjectId, required)
+
+**Fetch Example:**
+```javascript
+const recipeData = {
+  title: 'Chocolate Chip Cookies',
+  description: 'Delicious homemade chocolate chip cookies',
+  user_id: '60d5ec49f1b2c72b8c8e4f1a',
+  category_id: '60d5ec49f1b2c72b8c8e4f1b'
+};
+
+const response = await fetch(`${API_BASE_URL}/api/recipes`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(recipeData),
+});
+const data = await response.json();
+```
+
+**Axios Example:**
+```javascript
+const recipeData = {
+  title: 'Chocolate Chip Cookies',
+  description: 'Delicious homemade chocolate chip cookies',
+  user_id: '60d5ec49f1b2c72b8c8e4f1a',
+  category_id: '60d5ec49f1b2c72b8c8e4f1b'
+};
+
+const { data } = await api.post('/api/recipes', recipeData);
 ```
 
 **Response:**
@@ -195,30 +872,331 @@ http://localhost:3000
 }
 ```
 
-### Create a Recipe Ingredient
-**POST** `/api/recipe-ingredients`
-```json
-{
-  "recipe_id": "60d5ec49f1b2c72b8c8e4f1c",
-  "ingredient_id": "60d5ec49f1b2c72b8c8e4f1d",
-  "quantity": "2",
-  "unit": "cups"
-}
+#### Update Recipe
+
+**PUT** `/api/recipes/:id`
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+- `recipeId` - Recipe ID (MongoDB ObjectId)
+- `title` - New recipe title (string, optional)
+- `description` - New description (string, optional)
+- `user_id` - New user ID (MongoDB ObjectId, optional)
+- `category_id` - New category ID (MongoDB ObjectId, optional)
+
+**Fetch Example:**
+```javascript
+const recipeId = '60d5ec49f1b2c72b8c8e4f1c';
+const updateData = {
+  title: 'Updated Recipe Title',
+  description: 'Updated description'
+};
+
+const response = await fetch(`${API_BASE_URL}/api/recipes/${recipeId}`, {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(updateData),
+});
+const data = await response.json();
 ```
 
-### Get Recipes Filtered by User
-**GET** `/api/recipes?user_id=60d5ec49f1b2c72b8c8e4f1a`
+**Axios Example:**
+```javascript
+const recipeId = '60d5ec49f1b2c72b8c8e4f1c';
+const updateData = {
+  title: 'Updated Recipe Title',
+  description: 'Updated description'
+};
 
-### Get Recipes Filtered by Category
-**GET** `/api/recipes?category_id=60d5ec49f1b2c72b8c8e4f1b`
+const { data } = await api.put(`/api/recipes/${recipeId}`, updateData);
+```
+
+#### Delete Recipe
+
+**DELETE** `/api/recipes/:id`
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+- `recipeId` - Recipe ID (MongoDB ObjectId)
+
+**Fetch Example:**
+```javascript
+const recipeId = '60d5ec49f1b2c72b8c8e4f1c';
+const response = await fetch(`${API_BASE_URL}/api/recipes/${recipeId}`, {
+  method: 'DELETE',
+});
+const data = await response.json();
+```
+
+**Axios Example:**
+```javascript
+const recipeId = '60d5ec49f1b2c72b8c8e4f1c';
+const { data } = await api.delete(`/api/recipes/${recipeId}`);
+```
+
+---
+
+### Recipe Ingredients
+
+#### Get All Recipe Ingredients
+
+**GET** `/api/recipe-ingredients`
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+- `recipe_id` - (optional) Filter by recipe ID (query parameter)
+- `ingredient_id` - (optional) Filter by ingredient ID (query parameter)
+
+**Fetch Example:**
+```javascript
+// Get all recipe ingredients
+const response = await fetch(`${API_BASE_URL}/api/recipe-ingredients`);
+const data = await response.json();
+
+// Get recipe ingredients by recipe
+const recipeId = '60d5ec49f1b2c72b8c8e4f1c';
+const response = await fetch(`${API_BASE_URL}/api/recipe-ingredients?recipe_id=${recipeId}`);
+const data = await response.json();
+```
+
+**Axios Example:**
+```javascript
+// Get all recipe ingredients
+const { data } = await api.get('/api/recipe-ingredients');
+
+// Get recipe ingredients by recipe
+const recipeId = '60d5ec49f1b2c72b8c8e4f1c';
+const { data } = await api.get('/api/recipe-ingredients', {
+  params: { recipe_id: recipeId }
+});
+```
+
+#### Get Ingredients by Recipe ID
+
+**GET** `/api/recipe-ingredients/recipe/:recipe_id`
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+- `recipeId` - Recipe ID (MongoDB ObjectId)
+
+**Fetch Example:**
+```javascript
+const recipeId = '60d5ec49f1b2c72b8c8e4f1c';
+const response = await fetch(`${API_BASE_URL}/api/recipe-ingredients/recipe/${recipeId}`);
+const data = await response.json();
+```
+
+**Axios Example:**
+```javascript
+const recipeId = '60d5ec49f1b2c72b8c8e4f1c';
+const { data } = await api.get(`/api/recipe-ingredients/recipe/${recipeId}`);
+```
+
+#### Get Recipe Ingredient by ID
+
+**GET** `/api/recipe-ingredients/:id`
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+- `recipeIngredientId` - Recipe Ingredient ID (MongoDB ObjectId)
+
+**Fetch Example:**
+```javascript
+const recipeIngredientId = '60d5ec49f1b2c72b8c8e4f1e';
+const response = await fetch(`${API_BASE_URL}/api/recipe-ingredients/${recipeIngredientId}`);
+const data = await response.json();
+```
+
+**Axios Example:**
+```javascript
+const recipeIngredientId = '60d5ec49f1b2c72b8c8e4f1e';
+const { data } = await api.get(`/api/recipe-ingredients/${recipeIngredientId}`);
+```
+
+#### Create Recipe Ingredient
+
+**POST** `/api/recipe-ingredients`
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+- `recipe_id` - Recipe ID (MongoDB ObjectId, required)
+- `ingredient_id` - Ingredient ID (MongoDB ObjectId, required)
+- `quantity` - Quantity (string, required)
+- `unit` - Unit of measurement (string, required)
+
+**Fetch Example:**
+```javascript
+const recipeIngredientData = {
+  recipe_id: '60d5ec49f1b2c72b8c8e4f1c',
+  ingredient_id: '60d5ec49f1b2c72b8c8e4f1d',
+  quantity: '2',
+  unit: 'cups'
+};
+
+const response = await fetch(`${API_BASE_URL}/api/recipe-ingredients`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(recipeIngredientData),
+});
+const data = await response.json();
+```
+
+**Axios Example:**
+```javascript
+const recipeIngredientData = {
+  recipe_id: '60d5ec49f1b2c72b8c8e4f1c',
+  ingredient_id: '60d5ec49f1b2c72b8c8e4f1d',
+  quantity: '2',
+  unit: 'cups'
+};
+
+const { data } = await api.post('/api/recipe-ingredients', recipeIngredientData);
+```
+
+#### Update Recipe Ingredient
+
+**PUT** `/api/recipe-ingredients/:id`
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+- `recipeIngredientId` - Recipe Ingredient ID (MongoDB ObjectId)
+- `recipe_id` - New recipe ID (MongoDB ObjectId, optional)
+- `ingredient_id` - New ingredient ID (MongoDB ObjectId, optional)
+- `quantity` - New quantity (string, optional)
+- `unit` - New unit (string, optional)
+
+**Fetch Example:**
+```javascript
+const recipeIngredientId = '60d5ec49f1b2c72b8c8e4f1e';
+const updateData = {
+  quantity: '3',
+  unit: 'tablespoons'
+};
+
+const response = await fetch(`${API_BASE_URL}/api/recipe-ingredients/${recipeIngredientId}`, {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(updateData),
+});
+const data = await response.json();
+```
+
+**Axios Example:**
+```javascript
+const recipeIngredientId = '60d5ec49f1b2c72b8c8e4f1e';
+const updateData = {
+  quantity: '3',
+  unit: 'tablespoons'
+};
+
+const { data } = await api.put(`/api/recipe-ingredients/${recipeIngredientId}`, updateData);
+```
+
+#### Delete Recipe Ingredient
+
+**DELETE** `/api/recipe-ingredients/:id`
+
+**Variables:**
+- `API_BASE_URL` - Your API base URL
+- `recipeIngredientId` - Recipe Ingredient ID (MongoDB ObjectId)
+
+**Fetch Example:**
+```javascript
+const recipeIngredientId = '60d5ec49f1b2c72b8c8e4f1e';
+const response = await fetch(`${API_BASE_URL}/api/recipe-ingredients/${recipeIngredientId}`, {
+  method: 'DELETE',
+});
+const data = await response.json();
+```
+
+**Axios Example:**
+```javascript
+const recipeIngredientId = '60d5ec49f1b2c72b8c8e4f1e';
+const { data } = await api.delete(`/api/recipe-ingredients/${recipeIngredientId}`);
+```
+
+---
+
+## Error Handling Examples
+
+### Frontend Error Handling
+
+**Fetch with Error Handling:**
+```javascript
+const fetchUser = async (userId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/users/${userId}`);
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Something went wrong');
+    }
+    
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    // Handle error in UI
+    return null;
+  }
+};
+```
+
+**Axios with Error Handling:**
+```javascript
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Add response interceptor for error handling
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response) {
+      // Server responded with error
+      const errorMessage = error.response.data.error || 'Something went wrong';
+      console.error('API Error:', errorMessage);
+      // Handle error in UI
+    } else if (error.request) {
+      // Request made but no response
+      console.error('Network Error:', error.request);
+    } else {
+      // Something else happened
+      console.error('Error:', error.message);
+    }
+    return Promise.reject(error);
+  }
+);
+```
+
+**Error Response Format:**
+```json
+{
+  "success": false,
+  "error": "User not found"
+}
+```
 
 ## Data Models
 
 ### User
 ```typescript
 {
-  username: string;      // Required, unique
-  email: string;         // Required, unique, lowercase
+  username: string;              // Required, unique
+  email: string;                 // Required, unique, lowercase
+  profileImage?: string;         // Base64 encoded image data URI (optional)
+  profileImageContentType?: string; // MIME type (optional)
   createdAt: Date;
   updatedAt: Date;
 }
@@ -283,9 +1261,17 @@ The API uses a centralized error handling middleware. All errors follow this for
 Common HTTP status codes:
 - `200` - Success
 - `201` - Created
-- `400` - Bad Request (validation errors)
-- `404` - Not Found
+- `400` - Bad Request (validation errors, missing required fields)
+- `404` - Not Found (resource doesn't exist)
 - `500` - Internal Server Error
+
+**Error Response Example:**
+```json
+{
+  "success": false,
+  "error": "Username and email are required"
+}
+```
 
 ## Project Structure
 

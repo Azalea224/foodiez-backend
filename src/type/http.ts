@@ -8,3 +8,8 @@ export interface UserType {
 export interface CustomRequest extends Request {
   user?: UserType;
 }
+
+// Extend Request to include multer file
+export interface RequestWithFile extends Request {
+  file?: Express.Multer.File;
+}
