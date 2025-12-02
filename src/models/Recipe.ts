@@ -5,6 +5,8 @@ export interface IRecipe extends Document {
   description: string;
   user_id: mongoose.Types.ObjectId;
   category_id: mongoose.Types.ObjectId;
+  image?: string; // Base64 encoded image data
+  imageContentType?: string; // MIME type (e.g., 'image/jpeg', 'image/png')
 }
 
 const RecipeSchema: Schema = new Schema(
@@ -27,6 +29,14 @@ const RecipeSchema: Schema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Category",
       required: true,
+    },
+    image: {
+      type: String,
+      default: null,
+    },
+    imageContentType: {
+      type: String,
+      default: null,
     },
   },
   {

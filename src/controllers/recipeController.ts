@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Recipe, User, Category } from "../models";
 import { AppError } from "../middleware/errorHandler";
+import { RequestWithFile } from "../type/http";
 
 export const getAllRecipes = async (req: Request, res: Response): Promise<void> => {
   const { user_id, category_id } = req.query;
@@ -125,6 +126,82 @@ export const deleteRecipe = async (req: Request, res: Response): Promise<void> =
   res.status(200).json({
     success: true,
     message: "Recipe deleted successfully",
+  });
+};
+
+export const uploadRecipeImage = async (
+  req: RequestWithFile,
+  res: Response
+): Promise<void> => {
+  const { id } = req.params;
+
+  if (!req.file) {
+    throw new AppError("No image file provided", 400);
+  }
+
+  // Check if file is an image
+  if (!req.file.mimetype.startsWith("image/")) {
+    throw new AppError("File must be an image", 400);
+  }
+
+  // Verify recipe exists
+  const recipe = await Recipe.findById(id);
+  if (!recipe) {
+    throw new AppError("Recipe not found", 404);
+  }
+
+  // Convert buffer to base64
+  const base64Image = req.file.buffer.toString("base64");
+  const imageDataUri = `data:${req.file.mimetype};base64,${base64Image}`;
+
+  // Update recipe with image
+  const updatedRecipe = await Recipe.findByIdAndUpdate(
+    id,
+    {
+      image: imageDataUri,
+      imageContentType: req.file.mimetype,
+    },
+    { new: true, runValidators: true }
+  )
+    .populate("user_id", "username email")
+    .populate("category_id", "name description")
+    .select("-__v");
+
+  res.status(200).json({
+    success: true,
+    message: "Recipe image uploaded successfully",
+    data: updatedRecipe,
+  });
+};
+
+export const deleteRecipeImage = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { id } = req.params;
+
+  // Verify recipe exists
+  const recipe = await Recipe.findById(id);
+  if (!recipe) {
+    throw new AppError("Recipe not found", 404);
+  }
+
+  const updatedRecipe = await Recipe.findByIdAndUpdate(
+    id,
+    {
+      image: null,
+      imageContentType: null,
+    },
+    { new: true, runValidators: true }
+  )
+    .populate("user_id", "username email")
+    .populate("category_id", "name description")
+    .select("-__v");
+
+  res.status(200).json({
+    success: true,
+    message: "Recipe image deleted successfully",
+    data: updatedRecipe,
   });
 };
 

@@ -4,6 +4,7 @@ A RESTful API for managing recipes, ingredients, categories, and users. Built wi
 
 ## Features
 
+- 🔐 **Authentication** - User registration, login, and JWT-based authentication
 - 🍳 **Recipe Management** - Create, read, update, and delete recipes
 - 👥 **User Management** - Manage users who create recipes with profile images
 - 📁 **Category Management** - Organize recipes by categories
@@ -11,6 +12,7 @@ A RESTful API for managing recipes, ingredients, categories, and users. Built wi
 - 🔗 **Recipe Ingredients** - Link ingredients to recipes with quantities and units
 - 🔍 **Filtering & Querying** - Filter recipes by user or category
 - 🖼️ **Profile Images** - Upload and manage user profile images stored in MongoDB
+- 🔒 **Protected Routes** - JWT token-based route protection
 - ✅ **Error Handling** - Comprehensive error handling middleware
 - 📝 **Request Logging** - HTTP request logging with Morgan
 
@@ -20,6 +22,7 @@ A RESTful API for managing recipes, ingredients, categories, and users. Built wi
 - **Framework**: Express.js 5.x
 - **Language**: TypeScript
 - **Database**: MongoDB with Mongoose
+- **Authentication**: JWT (JSON Web Tokens) with bcrypt password hashing
 - **Middleware**: CORS, Morgan (logging)
 
 ## Prerequisites
@@ -41,12 +44,16 @@ cd foodiez-backend
 npm install
 ```
 
-3. Set up environment variables (optional):
+3. Set up environment variables:
 Create a `.env` file in the root directory:
 ```env
 PORT=3000
 MONGODB_URI=mongodb://localhost:27017/foodiez
+JWT_SECRET=your-secret-key-change-in-production
+JWT_EXPIRE=7d
 ```
+
+**Important:** Change `JWT_SECRET` to a strong, random string in production!
 
 4. Make sure MongoDB is running:
 - Local MongoDB: Ensure MongoDB service is running on your machine
@@ -120,6 +127,12 @@ http://localhost:3000
 
 ### Health Check
 - **GET** `/` - Check if the API is running
+
+### Authentication
+- **POST** `/api/auth/register` - Register a new user
+- **POST** `/api/auth/login` - Login user and get JWT token
+- **POST** `/api/auth/logout` - Logout user (client-side token removal)
+- **GET** `/api/auth/me` - Get current authenticated user (protected)
 
 ### Users
 - **GET** `/api/users` - Get all users
@@ -1195,11 +1208,13 @@ api.interceptors.response.use(
 {
   username: string;              // Required, unique
   email: string;                 // Required, unique, lowercase
+  password: string;              // Required, hashed with bcrypt, min 6 characters
   profileImage?: string;         // Base64 encoded image data URI (optional)
   profileImageContentType?: string; // MIME type (optional)
   createdAt: Date;
   updatedAt: Date;
 }
+```
 ```
 
 ### Category
@@ -1262,14 +1277,30 @@ Common HTTP status codes:
 - `200` - Success
 - `201` - Created
 - `400` - Bad Request (validation errors, missing required fields)
+- `401` - Unauthorized (invalid or missing token, invalid credentials)
+- `403` - Forbidden (insufficient permissions)
 - `404` - Not Found (resource doesn't exist)
 - `500` - Internal Server Error
 
-**Error Response Example:**
+**Error Response Examples:**
 ```json
 {
   "success": false,
   "error": "Username and email are required"
+}
+```
+
+```json
+{
+  "success": false,
+  "error": "Invalid email or password"
+}
+```
+
+```json
+{
+  "success": false,
+  "error": "Not authorized to access this route"
 }
 ```
 
@@ -1279,12 +1310,14 @@ Common HTTP status codes:
 foodiez-backend/
 ├── src/
 │   ├── controllers/      # Request handlers
+│   │   ├── authController.ts
 │   │   ├── categoryController.ts
 │   │   ├── ingredientController.ts
 │   │   ├── recipeController.ts
 │   │   ├── recipeIngredientController.ts
 │   │   └── userController.ts
 │   ├── middleware/        # Custom middleware
+│   │   ├── authorize.ts
 │   │   ├── errorHandler.ts
 │   │   └── ...
 │   ├── models/           # Mongoose models
@@ -1295,6 +1328,7 @@ foodiez-backend/
 │   │   ├── User.ts
 │   │   └── index.ts
 │   ├── routers/          # Route definitions
+│   │   ├── authRoutes.ts
 │   │   ├── categoryRoutes.ts
 │   │   ├── ingredientRoutes.ts
 │   │   ├── recipeRoutes.ts
@@ -1325,6 +1359,8 @@ To use it:
 |----------|-------------|---------|
 | `PORT` | Server port | `3000` |
 | `MONGODB_URI` | MongoDB connection string | `mongodb://localhost:27017/foodiez` |
+| `JWT_SECRET` | Secret key for JWT token signing | `your-secret-key-change-in-production` |
+| `JWT_EXPIRE` | JWT token expiration time | `7d` |
 
 ## Scripts
 

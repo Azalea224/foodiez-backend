@@ -5,6 +5,7 @@ import morgan from "morgan";
 import { errorHandler, notFound } from "./middleware/errorHandler";
 
 // Import routes
+import authRoutes from "./routers/authRoutes";
 import userRoutes from "./routers/userRoutes";
 import categoryRoutes from "./routers/categoryRoutes";
 import ingredientRoutes from "./routers/ingredientRoutes";
@@ -40,6 +41,10 @@ app.get("/", (req: Request, res: Response) => {
   });
 });
 
+// Auth routes (public)
+app.use("/api/auth", authRoutes);
+
+// API routes
 app.use("/api/users", userRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/ingredients", ingredientRoutes);

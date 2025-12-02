@@ -36,16 +36,31 @@ export const createUser = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { username, email } = req.body;
+  const { username, email, password } = req.body;
 
   if (!username || !email) {
     throw new AppError("Username and email are required", 400);
   }
 
-  const user = await User.create({ username, email });
+  // If password is provided, use it; otherwise create user without password (for admin use)
+  const userData: any = { username, email };
+  if (password) {
+    userData.password = password;
+  }
+
+  const user = await User.create(userData);
+  const userObj = (user as any).toObject();
   res.status(201).json({
     success: true,
-    data: user,
+    data: {
+      _id: userObj._id,
+      username: userObj.username,
+      email: userObj.email,
+      profileImage: userObj.profileImage,
+      profileImageContentType: userObj.profileImageContentType,
+      createdAt: userObj.createdAt,
+      updatedAt: userObj.updatedAt,
+    },
   });
 };
 
