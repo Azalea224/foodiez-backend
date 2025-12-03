@@ -40,12 +40,19 @@ export const getRecipeById = async (req: Request, res: Response): Promise<void> 
   });
 };
 
-export const createRecipe = async (req: Request, res: Response): Promise<void> => {
-  if (!req.body) {
-    throw new AppError("Request body is missing. Ensure Content-Type is application/json", 400);
+export const createRecipe = async (req: RequestWithFile, res: Response): Promise<void> => {
+  // Handle both JSON and multipart/form-data
+  let title: string, description: string, user_id: string, category_id: string;
+  
+  if (req.body && typeof req.body === 'object') {
+    // If body is already parsed (multipart/form-data)
+    title = req.body.title;
+    description = req.body.description;
+    user_id = req.body.user_id;
+    category_id = req.body.category_id;
+  } else {
+    throw new AppError("Request body is missing. Ensure Content-Type is application/json or multipart/form-data", 400);
   }
-
-  const { title, description, user_id, category_id } = req.body;
 
   if (!title || !user_id || !category_id) {
     throw new AppError("Title, user_id, and category_id are required", 400);
@@ -63,8 +70,34 @@ export const createRecipe = async (req: Request, res: Response): Promise<void> =
     throw new AppError("Category not found", 404);
   }
 
-  const recipe = await Recipe.create({ title, description, user_id, category_id });
-  const populatedRecipe = await Recipe.findById(recipe._id)
+  // Prepare recipe data
+  const recipeData: any = { title, description, user_id, category_id };
+
+  // Handle image if provided (from multipart/form-data)
+  // Check both req.file (single file) and req.files (fields with multiple files)
+  let imageFile: Express.Multer.File | null = null;
+  
+  if (req.file) {
+    imageFile = req.file;
+  } else if (req.files) {
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+    if (files.image && files.image.length > 0) {
+      imageFile = files.image[0];
+    }
+  }
+  
+  if (imageFile) {
+    if (!imageFile.mimetype.startsWith("image/")) {
+      throw new AppError("File must be an image", 400);
+    }
+    const base64Image = imageFile.buffer.toString("base64");
+    recipeData.image = `data:${imageFile.mimetype};base64,${base64Image}`;
+    recipeData.imageContentType = imageFile.mimetype;
+  }
+
+  const recipe = await Recipe.create(recipeData);
+  const recipeId = (recipe as any)._id?.toString() || (recipe as any).id?.toString();
+  const populatedRecipe = await Recipe.findById(recipeId)
     .populate("user_id", "username email")
     .populate("category_id", "name description")
     .select("-__v");

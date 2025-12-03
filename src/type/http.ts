@@ -12,4 +12,5 @@ export interface CustomRequest extends Request {
 // Extend Request to include multer file
 export interface RequestWithFile extends Request {
   file?: Express.Multer.File;
+  files?: Express.Multer.File[] | { [fieldname: string]: Express.Multer.File[] };
 }

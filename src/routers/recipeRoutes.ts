@@ -13,7 +13,14 @@ import { uploadProfileImage as uploadMiddleware } from "../middleware/upload";
 
 const router = express.Router();
 
-router.route("/").get(asyncHandler(getAllRecipes)).post(asyncHandler(createRecipe));
+// Create recipe - can accept both JSON and multipart/form-data with optional image
+router
+  .route("/")
+  .get(asyncHandler(getAllRecipes))
+  .post(
+    uploadMiddleware.fields([{ name: 'image', maxCount: 1 }]), // Accept optional image
+    asyncHandler(createRecipe)
+  );
 
 router
   .route("/:id")
