@@ -19,6 +19,10 @@ const generateToken = (userId: string): string => {
 
 // Register new user
 export const register = async (req: Request, res: Response): Promise<void> => {
+  if (!req.body) {
+    throw new AppError("Request body is missing. Ensure Content-Type is application/json", 400);
+  }
+
   const { username, email, password } = req.body;
 
   if (!username || !email || !password) {
@@ -73,6 +77,10 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
 // Login user
 export const login = async (req: Request, res: Response): Promise<void> => {
+  if (!req.body) {
+    throw new AppError("Request body is missing. Ensure Content-Type is application/json", 400);
+  }
+
   const { email, password } = req.body;
 
   if (!email || !password) {

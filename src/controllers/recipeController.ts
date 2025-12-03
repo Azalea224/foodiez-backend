@@ -41,6 +41,10 @@ export const getRecipeById = async (req: Request, res: Response): Promise<void> 
 };
 
 export const createRecipe = async (req: Request, res: Response): Promise<void> => {
+  if (!req.body) {
+    throw new AppError("Request body is missing. Ensure Content-Type is application/json", 400);
+  }
+
   const { title, description, user_id, category_id } = req.body;
 
   if (!title || !user_id || !category_id) {
